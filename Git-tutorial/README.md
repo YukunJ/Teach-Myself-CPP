@@ -274,6 +274,100 @@ $ git branch -d hello-world-images
 Deleted branch hello-world-image (was 9e7a8ee).
 ```
 
+11. Revert Previous Commit
+
+`revert` is the command to take off a previous commit and make the deletion into a new commit, without modifying with the log.
+
+suppose we dont' want to add that line in the `index.html`. The change is included in the commit "add a line". We want to remove it.
+
+first of all, we want to check which commit is the one we want go back to: (use `--oneline` keyword to display a concise git log)
+
+```console
+$ git log --oneline
+bdfc2b1 (HEAD -> master) fix conflicts:
+9e7a8ee add a line
+17fd1f5 remove a line
+5ec2abb a small change
+c31a2c0 Added image to Hello World
+2daa287 Another changes
+48d7a59 First release of Git Helloworld Project
+```
+
+We can just revert back to the latest commit where we fix the merge conflcits. With `--no-edit` flag, we will get the default revert message in the log:
+
+```console
+$ git revert 9e7a8ee --no-edit
+```
+
+There are some shortcuts for revert. `git revert HEAD` will revert the latest commit, while `git revert HEAD~x` will revert the x-th latest commit (index start with 0, so `HEAD` is actually `HEAD~0`)
+
+12. Reset
+
+To compare with the `revert` command we mentioned above, `reset` will move the repo all the way back to a previous commit, essentially removing all the changes in between that commit and latest version. `revert` only remove changes in one previous commit but does keep changes after that commit.
+
+Now, suppose we add two files `file1.txt`, `file2.txt` and `file3.txt` and include them in two separate commits:
+
+```console
+$ touch file1.txt file2.txt file3.txt
+$ git add file1.txt && git commit -m "Add file1"
+$ git add file2.txt && git commit -m "Add file2"
+$ git add file3.txt && git commit -m "Add file3"
+$ git log --oneline
+327ae72 (HEAD -> master) Add file3
+8b159b4 Add file2
+cf9f3bf Add file1
+...(more)...
+```
+
+And now we don't want the file2 and file3, but we do want to retain file1. We could just revert the 2 recent commits separately, or we will reset back to the commit where we add the file1.
+
+```console
+$ git reset cf9f3bf
+$ git log
+cf9f3bf (HEAD -> master) Add file1
+...(more)...
+```
+**Warning** it's generally dangerous to mess around with the commit history of a repo, especially when working in collaboration with others. 
+
+There is way to undo reset if we know the git commit hash. In previous example, even if we reset back to file1's commit, we can still go back since we know the last commit's hash where file 3 is added is `327ae72`.
+
+```console
+$ git reset 327ae72
+$ git log
+327ae72 (HEAD -> master) Add file3
+8b159b4 Add file2
+cf9f3bf Add file1
+...(more)...
+```
+
+13. Amend
+
+`commit --amend` could be used to modify the recent commit and swap change its commit message.
+
+It combines the changes in `staging area` with the latest commit and create a new commit out of it, replacing the latest commit.
+
+For example, we change the `README.md` a little bit and want to make a commit, but type in quite a few typos there in the commit messages.
+
+```console
+$ git add README.md
+$ git commit -m "Upated: RMEADE.md (ugly typos)"
+$ git log --oneline
+b0dfb07 (HEAD -> master) Upated: RMEADE.md (ugly typos)
+327ae72 Add file3
+...(more)...
+```
+Oh No! The git history looks bad with our typos. No worries! `amend` comes to help.
+
+```console
+$ git commit --amend -m "Update: README.md (beautiful)"
+$ git log --oneline
+d4bf700 (HEAD -> master) Update: README.md (beautiful)
+327ae72 Add file3
+...(more)...
+```
+
+We cam see the previous typo-commit is replaced by our newly-amended one.
+
 ---
 
 ### Git Remote
