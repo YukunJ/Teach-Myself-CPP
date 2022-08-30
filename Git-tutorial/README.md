@@ -371,3 +371,278 @@ We cam see the previous typo-commit is replaced by our newly-amended one.
 ---
 
 ### Git Remote
+
+So far we have only been working on a repo with git locally. However, when we need to collaborate with other people across the world, we need a way to "communicate" our progress through the network. Also it's safer to always backup the development progress on the remote git repo, in case if our computers break or are lost. (Hopefully not)
+
+We need to first create a new github repo and upload the local one we have been working on so far, to sync. 
+
+We name the remote repo also `myproject` for convenience.
+
+1. Sync with Remote Repo
+
+In our local project repo, we need to add a remote tracking link:
+
+```console
+$ git remote add https://github.com/[username]/myproject.git
+```
+
+and we check if we are remotely sync with the repo on github through `git remote -v`
+
+```console
+$ git remote -v
+origin	https://github.com/[username]/myproject.git (fetch)
+origin	https://github.com/[username]/myproject.git (push)
+```
+
+And then we could push all our local developments to the remote repo through:
+
+```console
+$ git push --set-upstream origin master
+ 
+Enumerating objects: 34, done.
+Counting objects: 100% (34/34), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (33/33), done.
+Writing objects: 100% (34/34), 49.37 KiB | 12.34 MiB/s, done.
+Total 34 (delta 17), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (17/17), done.
+To https://github.com/[username]/myproject.git
+ * [new branch]      master -> master
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+```
+
+Now we have uploaded all the developments to the remote repo.
+
+2. Grab New Stuff
+
+Now suppose something new happens on the remote repo. Here we simulate that by remove a line from the `README.md` directly on the github and commit there.
+
+How could we update the local repo to include the changes?
+
+We have two choices:
+
+- `fetch` + `merge`
+- `pull`
+
+Let's start with the first combination. We need to first download all the new changes from remote using `fetch`
+
+```console
+$ git fetch origin
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 3 (delta 2), reused 2 (delta 2), pack-reused 0
+Unpacking objects: 100% (3/3), 689 bytes | 344.00 KiB/s, done.
+From https://github.com/[username]/myproject
+   d4bf700..6d4ad42  master     -> origin/master
+```
+
+now we have the newly changes from upstream, we check the git status:
+
+```console
+$ git status
+On branch master
+Your branch is behind 'origin/master' by 1 commit, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+```
+
+Clearly it shows we see that local repo is 1 commit behind the upstream master, the one line change on `README.md`. We could double check the exact difference using the `git diff` command
+
+```console
+$ git diff origin/master
+diff --git a/README.md b/README.md
+index f3fa9a9..cf28200 100644
+--- a/README.md
++++ b/README.md
+@@ -3,3 +3,5 @@ Hello World repository for Git tutorial
+ This is an example repository for the Git tutoial on https://www.w3schools.com
+ 
+ This repository is built step by step in the tutorial.
++
++a new line
+```
+
+This looks align with our expectation. Now we can merge the commit:
+
+```console
+$ git merge origin/master
+Updating d4bf700..6d4ad42
+Fast-forward
+ README.md | 2 --
+ 1 file changed, 2 deletions(-)
+
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+```
+
+There we go! Now our local git is up to date.
+
+The above approach works, but a bit tedious. We could actually just do this update in one step by `pull` command, which is the combination of `fetch` and `merge`.
+
+Let's add back the new line deleted from `README.md` on the github remotely and try to pull the changes to local git.
+
+```console
+$ git pull origin
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 696 bytes | 232.00 KiB/s, done.
+From https://github.com/[username]/myproject
+   6d4ad42..b2bb9ae  master     -> origin/master
+Updating 6d4ad42..b2bb9ae
+Fast-forward
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+```
+
+and we can see we are updated with the remote master branch:
+
+```console
+$ git log --oneline
+b2bb9ae (HEAD -> master, origin/master) Add back a new line from github directly
+6d4ad42 Remove the new line README.md  GitHub directly
+d4bf700 Update: README.md (beautiful)
+327ae72 Add file3
+8b159b4 Add file2
+cf9f3bf Add file1
+...(more)...
+```
+
+3. Push New Stuff
+
+In last section, we learned how to download and keep in sync with remote repo. Now we are going to make our contribution to the remote repo through `push` command.
+
+Let's just add another line in the `README.md` and try to update the remote repo.
+
+```console
+$ git commit -a -m "Update readme locally and try push"
+[master f8986b8] Update readme locally and try push
+ 1 file changed, 1 insertion(+)
+
+$ git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+```
+
+Git shows that we are 1 commit ahead of the remote master branch. Let's push the change to remote repo.
+
+```console
+$ git push origin
+```
+
+4. Remote Branch Pull
+
+We can also directly create a new branch on the remote repo through the GUI. We create a new branch called `secondary` from `master` branch and made some changes on the `README.md`, committed on github directly.
+
+We can pull the new branch to local git and check it:
+
+```console
+$ git pull
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 697 bytes | 232.00 KiB/s, done.
+From https://github.com/[username]/myproject
+ * [new branch]      secondary  -> origin/secondary
+Already up to date.
+```
+
+We can check the new branch as usual through `git branch`. But by default it only displays local branches. We need the `-a` flag for all local and remote branches, or `-r` flag for only remote branches.
+
+```console
+$ git branch // only local branches
+* master
+
+$ git branch -a
+* master
+  remotes/origin/master
+  remotes/origin/secondary
+
+$ git branch -r 
+  origin/master
+  origin/secondary
+```
+
+5. Push Local Branch to Remote
+
+We can push a local new branch with changes to remote repoo as well. Let's do it
+
+
+```console
+$ git checkout -b local-new-branch
+
+...
+(do some changes to README.md)
+...
+```
+
+``` console
+$ git commit -a -m "Update from local-new-branch"
+[local-new-branch 40e9ee3] Update: local-new-branch
+ 1 file changed, 2 insertions(+)
+```
+
+```console
+$ git push origin local-new-brancch
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 334 bytes | 334.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'local-new-branch' on GitHub by visiting:
+remote:      https://github.com/[username]/myproject/pull/new/local-new-branch
+remote: 
+To https://github.com/[username]/myproject.git
+ * [new branch]      local-new-branch -> local-new-branch
+```
+
+Now if we go to the github remote repo, we will see there is a newly pushed branch called `local-new-branch`
+
+6. Merge Into Master
+
+From the above, on the github repo page, we want to **merge** our changes in the `local-new-branch` into the main `master` branch. The webpage has the option **Compare & Pull Request**.
+
+We can go click it and create a **pull request** from it. 
+
+Since this is our own repo, we are the "authority" and can directly click **Merge pull request** to faciliate the changes merge into `master` branch. 
+
+In real life, however, typically a pull request needs to go through **code review** and **test** process, verified by your collaborators. If approved, then will the pull request go through and get merged.
+
+7. Fork & Clone Others' Repo
+
+Technically speaking, `fork` is not a git command. But rather it's a functionality provided by github to directly copy another public repo and make it into your own git repo. It's widely used in open-source project, where people fork the original repo and later try to make pull request to merge their changes into "THE repo" from their own forked copy of the repo.
+
+Typically, once we fork the repo, we want to download a local copy to our computer and start working on that. Given the url of the repo `[the repo url]`, we could use the `clone` command:
+
+```console
+$ git clone [the repo url] [the folder path we want to clone into]
+```
+
+`clone` will preserve all logging and versions of files from upstream.
+
+Typically, we want to name the original repo as `upstream` and our fork copy as `origin`.
+
+We can check all the remote tracking status by `git remote -v`. And we now will rename the `origin` to `upstream`:
+
+```console
+$ git remote rename origin upstream
+```
+
+And we can add tracking of a remote repo as `origin` with `[The url]` by the following command:
+
+```console
+$ git remote add origin [The url]
+```
+
+Now we have two remote trackings. If we want to make a contribution to the original repo, we could commit and push our changes to the forked repo we have, and on the github page create a **pull request** to the original repo. 
+
+If the changes look good to code reviewers of the original repo, they will approve the pull request and merge it.
+
+
