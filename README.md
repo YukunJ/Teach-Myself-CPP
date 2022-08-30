@@ -6,4 +6,5 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 ## Content
 
+- [Git tutorial](./Git-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
