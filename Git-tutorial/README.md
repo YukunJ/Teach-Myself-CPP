@@ -645,4 +645,23 @@ Now we have two remote trackings. If we want to make a contribution to the origi
 
 If the changes look good to code reviewers of the original repo, they will approve the pull request and merge it.
 
+8. Git Ignore
+
+We don't necessarily want git to track very single file in the local repo. There might be some log files, temporary files or personal files that shouldn't be included in the git workflow.
+
+To solve this, we can create a `.gitignore` file in our git repo, and files specified in it will be ignored by our git. However, the `.gitignore` file itself is tracked by git.
+
+Some common usages include:
+
+| command      | Description |
+| ----------- | ----------- |
+|     |     blank lines are ignored  |
+| # something   |lines start with # is comment and ignored        |
+| *name* | All *name* files and folders |
+| *name/* | All folders called *name* |
+| *name.file* | All *name.file* in repo |
+| **.file* | any file with extension *.file* |
+| *!\*.file* | negate any previous ignore on this file |
+
+
 
