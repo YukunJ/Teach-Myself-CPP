@@ -8,13 +8,14 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 - [Git tutorial](./Git-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
-- Effective Modern C++
+- [Effective Modern C++](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
 	* **auto**
 	* Moving to Modern C++
 	* Smart Pointers
 		* [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
 	* Rvalue References, Move Semantics, and Perfect Forwarding
+        * [Understand **std::move** and **std::forward**](./Effective-Modern-C++/Item-23)
 	* Lambda Expressions
 	* The Concurrency API
 	* Tweaks
