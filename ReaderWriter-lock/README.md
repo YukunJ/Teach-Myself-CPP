@@ -9,7 +9,7 @@ In this tutorial, we will analyze and draw insights from one version of **Reader
 #### Requirements
 
 + There are readers and writers for a data structure.
-+ Readers only read from the data structure, while writers will modify the existing data structurues.
++ Readers only read from the data structure, while writers will modify the existing data structures.
 + There can only be one writer at a time doing modification.
 + While there is an active writer writing, no reader should be able to access the data structure.
 + When no writer is active, multiple readers could read from the data structure at the same time.
