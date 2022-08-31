@@ -8,6 +8,7 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 - [Git tutorial](./Git-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
+- [How to write a Reader-Writer lock](./ReaderWriter-lock)
 - [Effective Modern C++](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
 	* **auto**
