@@ -13,7 +13,7 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 	* **auto**
 	* Moving to Modern C++
 	* Smart Pointers
-		* 18. [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
+		* [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
 	* Rvalue References, Move Semantics, and Perfect Forwarding
 	* Lambda Expressions
 	* The Concurrency API
