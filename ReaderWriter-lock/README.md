@@ -36,7 +36,7 @@ There are a few C++ modern features that would faciliate the implementation of s
 
 Firstly, we will look at the declaration of such a **Reader-Writer lock**.
 
-The lock relies on one **mute** and two **condition_variable**s for reader and writer respectively. We delete the copy construction and copy assignment operator to make it **non-copyable**. 
+The lock relies on one **mutex** and two **condition_variable**s for reader and writer respectively. We delete the copy construction and copy assignment operator to make it **non-copyable**. 
 
 ```CPP
 #pragma once
