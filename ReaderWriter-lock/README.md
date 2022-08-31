@@ -25,7 +25,7 @@ There are a few C++ modern features that would faciliate the implementation of s
 1. **std::mutex** is the synchronization primitive. It's not copyable and not movable. User can call `lock` and `unlock` functionality on a share **std::mutex** so that only one thread would be able to grab the lock and proceed. 
 2. **std::lock_guard** is the RAII-style wrapper for **std::mutex**. Once created, it will try to grab the ownership for the mutex, and once the lock_guard goes out of scope, it will automatically release the mutex.
 3. **std::unique_lock** is a general purpose **std::mutex** wrapper. It's very similar to the **std::lock_guard** above, but more flexible. It could unlock the mutex in the middle of its life cycle, and use with condition variables.
-4. **std::condition_variable** is the synchronization primitive that could be many threads to "wait" upon. And operation on this condition variable has the ability to either **notify_one** or **notify_all* of the waiting threads.
+4. **std::condition_variable** is the synchronization primitive that could have many threads to "wait" upon. And operation on this condition variable has the ability to either **notify_one** or **notify_all** of the waiting threads.
 5. **Important**: calling `wait` on a condition variable will atomically release the mutex lock it's holding. When it's waken up either by `notify_one()` or `notify_all()`, by that time it will acquire the mutex lock again.
 
 ---
