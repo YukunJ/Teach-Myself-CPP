@@ -103,6 +103,12 @@ We can see after we stage this file and check the git status, the status goes fr
 
 There are *shortcuts* for staging multiple files all at once. Either `git add --all` or `git add -A` would work to stage any changes in current repo.
 
+In the meantime, if we accidentally stage a file we don't really want to stage, we can unstage it through the command:
+
+```console
+$ git restore --staged [filename]
+```
+
 6. Commit Changes
 
 If we are to make a metaphor, staging is we tell git to "please keep an eye on my files in this repo" and commit is we tell git to "please take a photo **snapshot** of this repo now".
