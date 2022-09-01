@@ -5,7 +5,7 @@
 - Do the same thing for rvalue references and universal references being returned from functions that return by value.
 - Never apply **std::move** or **std::forward** to local objects if they would otherwise eligible for the return value optimization (RVO).
 
-rvalue references should be unconditionally cast to rvalues (via **std::move**), and universal references should be conditionally cast (via **std::forward). A good example is illustrated below:
+rvalue references should be unconditionally cast to rvalues (via **std::move**), and universal references should be conditionally cast (via **std::forward**). A good example is illustrated below:
 
 ```CPP
 class Widget {
