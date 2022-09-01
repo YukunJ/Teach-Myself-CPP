@@ -97,7 +97,7 @@ Widget makeWidget() {
   Widget w;
   ...
   ...
-  return std::move(w);
+  return std::move(w); // violate RVO requirement
 }
 ```
 
