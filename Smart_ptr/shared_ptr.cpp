@@ -69,7 +69,16 @@ public:
     shared_ptr &operator=(const shared_ptr& rhs) {
         /*
          copy assignment, increase counter by 1 and copy over
+         if already manages an object, decrement the count
         */
+        if (ptr_) {
+            if (!counter_->reduce_count()) {
+                delete ptr_;
+                delete counter_;
+                ptr_ = nullptr;
+                counter_ = nullptr;
+            }
+        }
         if (rhs.ptr_) {
             rhs.counter_->add_count();
             ptr_ = rhs.get();
@@ -81,7 +90,16 @@ public:
     shared_ptr &operator=(shared_ptr&& rhs) {
         /*
          move assignment, steal over from right hand side
+         if already manages an object, decrement the count
         */
+        if (ptr_) {
+            if (!counter_->reduce_count()) {
+                delete ptr_;
+                delete counter_;
+                ptr_ = nullptr;
+                counter_ = nullptr;
+            }
+        }
         if (rhs.ptr_) {
             ptr_ = rhs.get();
             counter_ = rhs.get_counter();
@@ -132,5 +150,18 @@ int main(int argc, const char *argv[]) {
     }
     assert(ptr1.use_count() == 3);
 
+    // when copying to a shared_ptr who already holds an object
+    // the reference count needs to be decremented
+    yukunj::shared_ptr<shape> ptr5{create_shape(shape_type::circle)};
+    yukunj::shared_ptr<shape> ptr6 = ptr5;
+    assert(ptr5.use_count() == 2);
+
+    yukunj::shared_ptr<shape> ptr7{create_shape(shape_type::rectangle)};
+    assert(ptr7.use_count() == 1);
+
+    // the count for ptr5 should reduce by 1, and count for ptr1 should increment by 1
+    ptr6 = ptr7;
+    assert(ptr5.use_count() == 1);
+    assert(ptr7.use_count() == 2);
     return 0;
 }
