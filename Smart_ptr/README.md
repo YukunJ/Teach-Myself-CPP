@@ -102,6 +102,8 @@ private:
 
 Built upon this **counter** class, we create our version of **shared_ptr**. It enables both copy and move operations. In copy operations the counter will be incremented by 1, while the move operation is just "steal over" from the rvalue referenced **shared_ptr**.
 
+Key implementation points are commented in the code below. The [source file](./shared_ptr.cpp) also contains test suites for illustration.
+
 ```CPP
 namespace yukunj {
 
