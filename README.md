@@ -16,6 +16,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
 - [Effective Modern C++](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
+        * [Understand template type deduction](./Effective-Modern-C++/Item-01)
 	* **auto**
 	* Moving to Modern C++
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
