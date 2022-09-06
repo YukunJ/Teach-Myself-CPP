@@ -20,6 +20,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)
 	* **auto**
 	* Moving to Modern C++
+        * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
