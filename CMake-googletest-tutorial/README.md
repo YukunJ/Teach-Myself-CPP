@@ -33,7 +33,7 @@ math::mul(3, 2) = 6
 
 Or we could write a simple `Makefile`:
 
-```console
+```text
 CC = g++
 CFLAGS = -std=c++11
 
