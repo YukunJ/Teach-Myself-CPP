@@ -6,7 +6,7 @@ In last section, we walk through how to write a `MakeFile` to automate the proce
 
 [**GoogleTest**](https://google.github.io/googletest) is Google's C++ testing and mocking framework. Once our project grows big, we need to write all kinds of testings to make sure the code functions as we expect. There are different types of testing: unit test, integration test, end-to-end test, etc.
 
-In this tutorial, we aim to build a simple tool project using `CMake` and integrate with **GoogleTest**. The main source is from pyk's repo [here](https://github.com/pyk/cmake-tutorial). Many thanks!
+In this tutorial, we aim to build a simple tool project using `CMake` and integrate with **GoogleTest**. The main source and reference is from pyk's repo [here](https://github.com/pyk/cmake-tutorial). Many thanks!
 
 ---
 
