@@ -12,6 +12,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 - [Makefile tutorial](./Makefile-tutorial)
 - [How to intergate with **GoogleTest** using CMake](./CMake-googletest-tutorial)
 - [How to write a Reader-Writer lock](./ReaderWriter-lock)
+- [How to design a Key-Value store using SkipList](./KV-store-skiplist)
 - [How to write Smart pointers](./Smart_ptr)
     * [my **unique_ptr**](./Smart_ptr/README.md#unique_ptr)
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
