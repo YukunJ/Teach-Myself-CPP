@@ -106,7 +106,7 @@ The removal algorithm is pretty straight-forward and easy. We just delete the wh
 
 ##### Analysis
 
-We roughly say that **SkipList**'s 3 main APIs is ***O(logn)*** in time complexity. The proof of this fact is a bit involved mathematically. We refer interested readers to the section "**9.4.2 A Probabilistic Analysis of Skip Lists**" of the reference book mentioned at beginnin.
+We roughly say that **SkipList**'s 3 main APIs is ***O(logn)*** in time complexity. The proof of this fact is a bit involved mathematically. We refer interested readers to the section "**9.4.2 A Probabilistic Analysis of Skip Lists**" of the reference book mentioned at beginning.
 
 ---
 
