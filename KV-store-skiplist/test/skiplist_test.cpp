@@ -138,4 +138,61 @@ TEST(SkipNodeTest, SkipNodeSkipSearch) {
     delete node_7_3;
     delete node_4_3;
 }
+
+TEST(SkipListTest, SkipListInsertSearchTest) {
+    // test if the SkipList could handle insert and search correctly
+    SkipList<int, int> skip;
+    skip.SkipInsert(1, 12);
+    skip.SkipInsert(4, 13);
+    skip.SkipInsert(5, 53);
+    skip.SkipInsert(-2, 2);
+
+    auto res1 = skip.SkipSearch(4);
+    EXPECT_EQ(res1->GetKey(), 4);
+    EXPECT_EQ(res1->GetValue(), 13);
+
+    auto res2 = skip.SkipSearch(0);
+    EXPECT_EQ(res2->GetKey(), -2);
+    EXPECT_EQ(res2->GetValue(), 2);
+
+    auto res3 = skip.SkipSearch(6);
+    EXPECT_EQ(res3->GetKey(), 5);
+    EXPECT_EQ(res3->GetValue(), 53);
+}
+
+TEST(SkipListTest, SkipListSameKeyInsertTest) {
+    // test if the SkipList would replace old value when a key is repeated inserted
+    SkipList<int, int> skip;
+    skip.SkipInsert(1, 12);
+    skip.SkipInsert(4, 13);
+    skip.SkipInsert(5, 53);
+    skip.SkipInsert(-2, 2);
+
+    skip.SkipInsert(-2, 4);
+    skip.SkipInsert(-2, 5);
+    auto res = skip.SkipSearch(-2);
+    EXPECT_EQ(res->GetKey(), -2);
+    EXPECT_EQ(res->GetValue(), 5);
+
+    skip.SkipInsert(4, 4);
+    skip.SkipInsert(4, 9);
+    auto res2 = skip.SkipSearch(4);
+    EXPECT_EQ(res2->GetKey(), 4);
+    EXPECT_EQ(res2->GetValue(), 9);
+}
+
+TEST(SkipListTest, SkipListRemovalTest) {
+    // test if the SkipList could handle delete non-exist key, repeat delete the same key, etc.
+    SkipList<int, int> skip;
+    skip.SkipInsert(1, 12);
+    skip.SkipInsert(4, 13);
+    skip.SkipInsert(5, 53);
+    skip.SkipInsert(-2, 2);
+
+    EXPECT_EQ(skip.SkipRemove(6), false);
+    EXPECT_EQ(skip.SkipRemove(5), true);
+    EXPECT_EQ(skip.SkipRemove(5), false);
+    EXPECT_NE(skip.SkipSearch(5)->GetKey(), 5);
+}
+
 } // namespace kvstore

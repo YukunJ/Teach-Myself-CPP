@@ -117,6 +117,7 @@ public:
         return const_cast<SkipNode*>(curr);
     }
 
+private:
     /**
      * @brief compare with the key, if should proceed going right
      * @param key the provided key
@@ -129,7 +130,6 @@ public:
         return after_->GetKey() <= key;
     }
 
-private:
     /** if the node is a sentinel node */
     bool is_sentinel_ = false;
     /** the pointer to the SkipNode before */
@@ -154,6 +154,53 @@ private:
  */
 template<typename K, typename V>
 class SkipList {
+public:
+    /**
+     * @brief create a new SkipList object
+     * @param max_height the maximum height allowed to grow
+     */
+    explicit SkipList(int max_height = 10);
+
+    /**
+     * @brief dtor to release all the SkipNodes in the SkipList
+     */
+    ~SkipList();
+
+    /**
+     * @brief search in the SkipList with given key
+     * @param key key for search
+     * @return the SkipNode with largest key that's smaller or equal to key
+     */
+    SkipNode<K, V> *SkipSearch(K key);
+
+    /**
+     * @brief insert into the SkipList of a key-value pair
+     * @param key the key
+     * @param value the value
+     * @return true if insertion is successful, false otherwise
+     */
+    bool SkipInsert(K key, V value);
+
+    /**
+     * @brief remove a key from the SkipList
+     * @param key the key
+     * @return true if removal is successful, false otherwise
+     */
+    bool SkipRemove(K key);
+
+private:
+
+    /** the maximum height we allow the SkipList to grow */
+    int max_height_;
+
+    /** the current level of the SkipList */
+    int curr_height_ = 0;
+
+    /** how many key-value pairs are contained in the SkipList */
+    std::size_t curr_count_ = 0;
+
+    /** the top-left sentinel SkipNode in the SkipList */
+    SkipNode<K,V> *head = nullptr;
 };
 } // namespace kvstore
 
