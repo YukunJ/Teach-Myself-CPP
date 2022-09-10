@@ -127,6 +127,10 @@ We roughly say that **SkipList**'s 3 main APIs is ***O(logn)*** in time complexi
 
 The source code is in [src/skiplist.h](src/skiplist.h) with detailed comments. The first version (current one) is strictly conform to the algorithm we mentioned above. However, this is by no means the most performant implementation.
 
+---
+
+#### How to test performance of the **SkipList**?
+
 We provide a simple performance benchmarking program. After you build the project [as instructed](#how-to-build-this-project?) in previous section, we can run the stress test by
 
 ```console
