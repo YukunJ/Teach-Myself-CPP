@@ -5,6 +5,7 @@ Key-Value store is an integral parts for many real-world giant industry applicat
 In the project, we aim to build a simple Key-Value Store using SkipList. The famous **[Redis](https://github.com/redis/redis)** database is implemented using SkipList as well. This project is partly inspired by [youngyangyang04](https://github.com/youngyangyang04)'s [project](https://github.com/youngyangyang04/Skiplist-CPP).
 
 The contents:
++ Build Instructions
 + Abstract Data Structure **SkipList**
 + C++ Implementation of **SkipList**
 + Performance Testing and Optimization
