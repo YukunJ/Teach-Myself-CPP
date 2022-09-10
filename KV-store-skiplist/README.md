@@ -140,7 +140,7 @@ $ ./stress_test [number-of-threads] [test-workload] [initial-SkipList-height]
 
 A simple experimental result is as follows:
 
-We set default initial height to 10, which is a self-adjusting parameter as the SkipList grows, and test it on a Linux machine.
+We set default initial height to 10, which is a self-adjusting parameter as the SkipList grows, and test it on a Linux machine. The unit is throughput/second
 
 | **num of threads V.S. workload** | **5000** | **10000** | **30000** |
 |:---------------------------:|:--------:|:---------:|:---------:|
