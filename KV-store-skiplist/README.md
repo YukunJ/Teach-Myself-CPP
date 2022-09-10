@@ -132,7 +132,7 @@ The source code is in [src/skiplist.h](src/skiplist.h) with detailed comments. T
 
 #### How to test performance of the **SkipList**?
 
-We provide a simple performance benchmarking program. After you build the project [as instructed](./#how-to-build-this-project?) in previous section, we can run the stress test by
+We provide a simple performance benchmarking program. After you build the project as instructed in previous section, we can run the stress test by
 
 ```console
 $ ./stress_test [number-of-threads] [test-workload] [initial-SkipList-height]
