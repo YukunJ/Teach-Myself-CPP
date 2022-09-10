@@ -2,13 +2,26 @@
 
 Key-Value store is an integral parts for many real-world giant industry applications. It provides fast access, insert and delete operations. 
 
-In the project, we aim to build a simple Key-Value Store using SkipList. The famous **[Redis](https://github.com/redis/redis)** database is implemented using SkipList as well.
+In the project, we aim to build a simple Key-Value Store using SkipList. The famous **[Redis](https://github.com/redis/redis)** database is implemented using SkipList as well. This project is partly inspired by [youngyangyang04](https://github.com/youngyangyang04)'s [project](https://github.com/youngyangyang04/Skiplist-CPP).
 
 The contents:
 + Abstract Data Structure **SkipList**
 + C++ Implementation of **SkipList**
 + Performance Testing and Optimization
 + Future Works
+
+---
+
+#### How to build this project?
+
+```console
+$ cd KV-store-skiplist
+$ mkdir build && cd build
+$ cmake .. 			# generate Makefile
+$ cmake --build . 		# build target
+$ ctest 			# this runs all the available test
+# ./stress_test 1 5000 10 	# this runs performance benchmarking
+```
 
 ---
 
@@ -110,3 +123,31 @@ We roughly say that **SkipList**'s 3 main APIs is ***O(logn)*** in time complexi
 
 ---
 
+#### How to implement a **SkipList**?
+
+The source code is in [src/skiplist.h](src/skiplist.h) with detailed comments. The first version (current one) is strictly conform to the algorithm we mentioned above. However, this is by no means the most performant implementation.
+
+We provide a simple performance benchmarking program. After you build the project [as instructed](#how-to-build-this-project?) in previous section, we can run the stress test by
+
+```console
+$ ./stress_test [number-of-threads] [test-workload] [initial-SkipList-height]
+```
+
+A simple experimental result is as follows:
+
+| **num of threads\workload** | **5000** | **10000** | **30000** |
+|:---------------------------:|:--------:|:---------:|:---------:|
+|            **1**            |   21018  |   10636   |    2542   |
+|            **2**            |   17855  |   11003   |    2026   |
+|            **4**            |   18870  |   10881   |    2336   |
+
+---
+
+#### Future Work
+
+There are quite a few drawbacks left in this current version of implementation we are already aware of. Hopefully we will improve and optimize upon them in near future:
+
++ No real multi-theading performance boost currently. The `SkipInsert` and `SkipRemove` are depending on a single shared `std::mutex`. A Reader-Writer lock could be applied here to allow multiple readers to read at the same time.
++ The `SkipInsert` does extra work than necessarily. It re-traverse the path when new layer is constructed by this Insert operation. Mostly it is for implementation convenience, but admittedly this convenience comes at the price of performance.
++ The stress testing only tests on `SkipInsert`, not comprehensive enough.
++ Only supports single-machine right now, no distrbuted system support.
