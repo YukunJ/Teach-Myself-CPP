@@ -8,6 +8,7 @@
 #ifndef KVSTORE_SKIPLIST_H
 #define KVSTORE_SKIPLIST_H
 
+#include <math.h>
 #include <random>
 #include <vector>
 #include <mutex>
@@ -173,7 +174,7 @@ class SkipList {
    * @brief create a new SkipList object
    * @param max_height the maximum height allowed to grow
    */
-  explicit SkipList(int max_height = 20) : max_height_(max_height) {
+  explicit SkipList(int max_height = 10) : max_height_(max_height) {
     // create the first layer of sentinel nodes
     head = new SkipNode<K, V>(K{}, V{}, true);
     auto tail = new SkipNode<K, V>(K{}, V{}, true);
@@ -254,6 +255,8 @@ class SkipList {
         last = new_node;
       }
       curr_size_++;
+      // self-adjust the max height as the SkipList grows
+      max_height_ = std::max(max_height_, ExpectedHeight());
       return true;
     }
   }
@@ -319,6 +322,14 @@ class SkipList {
 
     curr_height_++;
     head = new_head;
+  }
+
+  /**
+   * @brief in math theory, the expected height of the SkipList is log2(n) + 2
+   * @return the expected height of SkipList now
+   */
+  int ExpectedHeight() const {
+      return static_cast<int>(log2(curr_height_)) + 2;
   }
 
   /**

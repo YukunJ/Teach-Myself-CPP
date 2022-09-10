@@ -26,6 +26,7 @@ void *insertTest(long thread_id, long thread_num, long test_load) {
     for (size_t i = thread_id; i < test_load; i += thread_num) {
         test_list.SkipInsert(i, i);
     }
+    std::cout << "Finish insertTest with thread " << thread_id+1 << "/" << thread_num << std::endl;
     return 0;
 }
 
@@ -43,7 +44,7 @@ int main(int argc, const char *argv[]) {
     std::cout << "--------Test Spec--------" << std::endl;
     std::cout << "Launch test of load " << test_load << std::endl;
     std::cout << "with " << num_thread << " threads" << std::endl;
-    std::cout << "max height of the SkipList is set to " << max_height << std::endl;
+    std::cout << "max height of the SkipList is initially set to " << max_height << std::endl;
     std::cout << "---------------------------" << std::endl;
 
     {
