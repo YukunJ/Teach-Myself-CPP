@@ -140,7 +140,9 @@ $ ./stress_test [number-of-threads] [test-workload] [initial-SkipList-height]
 
 A simple experimental result is as follows:
 
-| **num of threads\workload** | **5000** | **10000** | **30000** |
+We set default initial height to 10, which is a self-adjusting parameter as the SkipList grows, and test it on a Linux machine.
+
+| **num of threads V.S. workload** | **5000** | **10000** | **30000** |
 |:---------------------------:|:--------:|:---------:|:---------:|
 |            **1**            |   21018  |   10636   |    2542   |
 |            **2**            |   17855  |   11003   |    2026   |
@@ -153,6 +155,6 @@ A simple experimental result is as follows:
 There are quite a few drawbacks left in this current version of implementation we are already aware of. Hopefully we will improve and optimize upon them in near future:
 
 + No real multi-theading performance boost currently. The `SkipInsert` and `SkipRemove` are depending on a single shared `std::mutex`. A Reader-Writer lock could be applied here to allow multiple readers to read at the same time.
-+ The `SkipInsert` does extra work than necessarily. It re-traverse the path when new layer is constructed by this Insert operation. Mostly it is for implementation convenience, but admittedly this convenience comes at the price of performance.
++ The `SkipInsert` does extra work than necessary. It re-traverse the path when new layer is constructed by this Insert operation. Mostly it is for implementation convenience, but admittedly this convenience comes at the price of performance.
 + The stress testing only tests on `SkipInsert`, not comprehensive enough.
 + Only supports single-machine right now, no distrbuted system support.
