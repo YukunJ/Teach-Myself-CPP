@@ -13,8 +13,8 @@ PROJECT(kvstore-skiplist)
 # add the definition for main executable, reference the project name
 ADD_EXECUTABLE(${PROJECT_NAME} src/main.cpp)
 
-# link the math library to main executable
-# TARGET_LINK_LIBRARIES(${PROJECT_NAME} skiplist)
+# add the stress test executable
+ADD_EXECUTABLE(stress_test test/stress_test.cpp)
 
 # add a path to download an external library from github
 INCLUDE(FetchContent)

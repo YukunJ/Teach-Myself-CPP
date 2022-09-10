@@ -10,6 +10,7 @@
 
 #include <random>
 #include <vector>
+#include <mutex>
 
 namespace kvstore {
 
@@ -199,7 +200,9 @@ class SkipList {
    * @param key key for search
    * @return the SkipNode with largest key that's smaller or equal to key
    */
-  SkipNode<K, V> *SkipSearch(K key) { return head->SkipSearch(key).first; }
+  SkipNode<K, V> *SkipSearch(K key) {
+      return head->SkipSearch(key).first;
+  }
 
   /**
    * @brief insert into the SkipList of a key-value pair
@@ -208,6 +211,7 @@ class SkipList {
    * @return true if insertion is new, false if replace old key-value pair
    */
   bool SkipInsert(K key, V value) {
+    std::lock_guard<std::mutex> guard(mutex_);
     auto search_pair = head->SkipSearch(key);
     auto match = search_pair.first;
     auto path = search_pair.second;
@@ -260,6 +264,7 @@ class SkipList {
    * @return true if removal is successful, false otherwise
    */
   bool SkipRemove(K key) {
+    std::lock_guard<std::mutex> guard(mutex_);
     auto match = SkipSearch(key);
     if (match->GetKey() != key || match->IsSentinel()) {
       // not exist in SkipList or is sentinel node
@@ -285,6 +290,12 @@ class SkipList {
    * @return the number of key-value pairs in the SkipList
    */
   std::size_t GetSize() { return curr_size_; }
+
+  /**
+   * @brief reassign the max height allowed for this SkipList
+   * @param height the new max height allowed
+   */
+  void SetMaxHeight(int height) { max_height_ = height; }
 
  private:
   /**
@@ -330,6 +341,9 @@ class SkipList {
 
   /** how many key-value pairs are contained in the SkipList */
   std::size_t curr_size_ = 0;
+
+  /** the mutex for concurrency control */
+  std::mutex mutex_;
 
   /** the top-left sentinel SkipNode in the SkipList */
   SkipNode<K, V> *head = nullptr;
