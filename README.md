@@ -19,6 +19,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 - [Effective Modern C++](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)
+        * [Understand ***auto*** type deduction](./Effective-Modern-C++/Item-02)
 	* **auto**
 	* Moving to Modern C++
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
