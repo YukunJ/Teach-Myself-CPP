@@ -22,6 +22,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
         * [Understand ***auto*** type deduction](./Effective-Modern-C++/Item-02)
 	* **auto**
 	* Moving to Modern C++
+		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
