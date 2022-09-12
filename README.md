@@ -24,6 +24,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 	* Moving to Modern C++
 		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
+		* [Prefer alias declarations to ***typedef***s](./Effective-Modern-C++/Item-09)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
