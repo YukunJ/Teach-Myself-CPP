@@ -21,6 +21,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)
         * [Understand ***auto*** type deduction](./Effective-Modern-C++/Item-02)
 		* [Understand ***decltype***](./Effective-Modern-C++/Item-03)
+		* [Know how to view deduced types](./Effective-Modern-C++/Item-04)
 	* **auto**
 	* Moving to Modern C++
 		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
