@@ -23,6 +23,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 		* [Understand ***decltype***](./Effective-Modern-C++/Item-03)
 		* [Know how to view deduced types](./Effective-Modern-C++/Item-04)
 	* **auto**
+		* [Prefer **auto** to explicit type declarations](./Effective-Modern-C++/Item-05)
 	* Moving to Modern C++
 		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
