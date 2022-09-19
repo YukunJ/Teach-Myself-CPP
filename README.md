@@ -6,6 +6,8 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 Aside from book reading notes, mostly I will be borrowing good resources from all over the repos on github, and re-implement them for deepening understanding. Sources are pointed out in each on.
 
+Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effective-Modern-CPP.pdf) to quickly grasp the new features since C++11/14.
+
 ## Content
 
 - [Git tutorial](./Git-tutorial)
@@ -29,6 +31,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
 		* [Prefer alias declarations to ***typedef***s](./Effective-Modern-C++/Item-09)
+		* [Prefer **const_iterator**s to **iterator**s](./Effective-Modern-C++/Item-13)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
