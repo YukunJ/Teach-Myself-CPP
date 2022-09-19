@@ -24,6 +24,7 @@ Aside from book reading notes, mostly I will be borrowing good resources from al
 		* [Know how to view deduced types](./Effective-Modern-C++/Item-04)
 	* **auto**
 		* [Prefer **auto** to explicit type declarations](./Effective-Modern-C++/Item-05)
+		* [Use the explicitly typed initializer idiom when **auto** deduces undesired types](./Effective-Modern-C++/Item-06)
 	* Moving to Modern C++
 		* [Distinguish between **()** and **{}** when creating objects](./Effective-Modern-C++/Item-07)
         * [Prefer ***nullptr*** to **0** and ***NULL***](./Effective-Modern-C++/Item-08)
