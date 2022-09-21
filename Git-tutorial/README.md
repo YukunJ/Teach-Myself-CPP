@@ -204,7 +204,7 @@ $ ls
 README.md	bluestyle.css	index.html
 ```
 
-10. Merge Branch
+10.1 Merge Branch
 
 Suppose now we are very happy with our new development in the `hello-world-image` branch and decide to merge it back to the `master` branch.
 
@@ -278,6 +278,37 @@ This concludes the merge of two conflicting branches, and by passing the flag `-
 ```console
 $ git branch -d hello-world-images
 Deleted branch hello-world-image (was 9e7a8ee).
+```
+
+10.2 Rebase Branch
+
+`rebase` is an alternative to `merge`. What they do in common is combine the different commits in two branches into one. However, `rebase` creates a linear track of commits, while `merge` merges all commits as a single commit, and leave a complete detailed history. 
+
+In a word, `merge` preserves history and `rebase` rewrite history.
+
+The git operation for `rebase` is:
+
+```console
+// at your feature branch
+$ git rebase <branch name>
+```
+
+if any conflict occurs, we must solve comflict as the case mentioned before, and continue the rebase by
+
+```console
+$ git rebase --continue
+```
+
+Or, we can run with `--skip` to skip those commits that introduce problem.
+
+```console
+$ git rebase --skip
+```
+
+Additionally, if we want to throw away a conflicted rebase operation, we could do
+
+```console
+$ git rebase --abort
 ```
 
 11. Revert Previous Commit
