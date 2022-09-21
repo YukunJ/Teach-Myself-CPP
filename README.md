@@ -11,6 +11,7 @@ Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effect
 ## Content
 
 - [Git tutorial](./Git-tutorial)
+- [Gdb tutorial](./Gdb-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
 - [How to intergate with **GoogleTest** using CMake](./CMake-googletest-tutorial)
 - [How to write a Reader-Writer lock](./ReaderWriter-lock)
