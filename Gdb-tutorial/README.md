@@ -18,7 +18,7 @@ We can first log in gdb and run the program:
 
 ```console
 $ gdb
-(gdb)$ file sample // run this sample program
+$ (gdb) file sample // run this sample program
 ```
 
 or we could directly run gdb on this executable:
