@@ -39,45 +39,45 @@ $ gdb --args g++ -g -o sample sample.cpp
 
 #### Common GDB Commands
 
-+ (gdb) CTRL + c: stop execution
-+ (gdb) next (n): run next line of program and does NOT step into function calls
-	+ (gdb) next X (n X): run next X lines of program
-	+ (gdb) nexti: run next line of assembly code and does NOT step into function call
-+ (gdb) step (s): run next line of program AND will step into function call
-	+ (gdb) step X (s X): step next X lines of program
-	+ (gdb) stepi: step next line of assembly code
-+ (gdb) continue (c): continue running program until hit next breakpoint or error
-+ (gdb) finish (f): run code until current function is finished
-+ (gdb) list (l): list 10 lines of source code from current line
-	+ (gdb) list X (l X): list 10 lines of source code from line X
-	+ (gdb) list fnName (l fnName): list 10 lines of source code from fnName function
++ (gdb) `CTRL + c`: stop execution
++ (gdb) `next (n)`: run next line of program and does NOT step into function calls
+	+ (gdb) `next X (n X)`: run next X lines of program
+	+ (gdb) `nexti`: run next line of assembly code and does NOT step into function call
++ (gdb) `step (s)`: run next line of program AND will step into function call
+	+ (gdb) `step X (s X)`: step next X lines of program
+	+ (gdb) `stepi`: step next line of assembly code
++ (gdb) `continue (c)`: continue running program until hit next breakpoint or error
++ (gdb) `finish (f)`: run code until current function is finished
++ (gdb) `list (l)`: list 10 lines of source code from current line
+	+ (gdb) `list X (l X)`: list 10 lines of source code from line X
+	+ (gdb) `list fnName (l fnName)`: list 10 lines of source code from fnName function
 
 
 We can set a breakpoint in function so that it stops wheneven it hits the break point.
-+ (gdb) break fnName (b fnName): breaks once we call a specific function
-+ (gdb) info b: display information about all breakpoints currently set
-+ (gdb) disable #: disable breakpoint with ID equal to #
++ (gdb) `break fnName (b fnName)`: breaks once we call a specific function
++ (gdb) `info b`: display information about all breakpoints currently set
++ (gdb) `disable #`: disable breakpoint with ID equal to #
 
 A special break point is called **watchpoint**, which stops the program whenever the value of an expression changes. The expression might be variable or values combined by operators
 
-+ (gdb) watch foo: watch the value of a variable called foo
-+ (gdb) watch *(int *)0x600850: watch the integer value stored at address 0x600850
++ (gdb) `watch foo`: watch the value of a variable called foo
++ (gdb) `watch *(int *)0x600850`: watch the integer value stored at address 0x600850
 
 We are also able to print out global and local variable values.
 
-+ (gdb) info variables: list all global and static variable names
-+ (gdb) info locals: list local variables of current stack frame
-+ (gdb) info args: list arguments of the current stack
-+ (gdb) print (p) [any valid expression]: print a expression
++ (gdb) `info variables`: list all global and static variable names
++ (gdb) `info locals`: list local variables of current stack frame
++ (gdb) `info args`: list arguments of the current stack
++ (gdb) `print (p)` [any valid expression]: print a expression
 
 We might want to see what's the history function call stack that brings the program here:
 
-+ (gdb) backtrace (bt): print a summary of function call stacks
++ (gdb) `backtrace (bt)`: print a summary of function call stacks
 
 And actually we can modify variables and call functions on the fly by gdb:
 
-+ (gdb) call expr: evaluate the expression expr
-+ (gdb) set [variable] expression: set the value associated with a variable  to expression
++ (gdb) `call expr`: evaluate the expression expr
++ (gdb) `set [variable] expression`: set the value associated with a variable  to expression
 
 ---
 
