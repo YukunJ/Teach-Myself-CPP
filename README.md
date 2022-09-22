@@ -36,6 +36,7 @@ Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effect
 		* [Prefer **delete**d functions to private undefined ones](./Effective-Modern-C++/Item-11)
 		* [Declare overriding functions **override**](./Effective-Modern-C++/Item-12)
 		* [Prefer **const_iterator**s to **iterator**s](./Effective-Modern-C++/Item-13)
+		* [Declare functions **noexcept** if they won't emit exceptions](./Effective-Modern-C++/Item-14)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
