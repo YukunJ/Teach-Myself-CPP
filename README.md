@@ -46,7 +46,7 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
 		* [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
-        	* [Use **std::shared_ptr** for shared-ownership resource management](./Effective-Modern-C++/Item-19)
+        * [Use **std::shared_ptr** for shared-ownership resource management](./Effective-Modern-C++/Item-19)
 		* [Use **std::weak_ptr** for **std::shared_ptr**-like pointers that can dangle](./Effective-Modern-C++/Item-20)   
 	* Rvalue References, Move Semantics, and Perfect Forwarding
         * [Understand **std::move** and **std::forward**](./Effective-Modern-C++/Item-23)
