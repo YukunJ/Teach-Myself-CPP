@@ -19,7 +19,7 @@ Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effect
 - [How to write Smart pointers](./Smart_ptr)
     * [my **unique_ptr**](./Smart_ptr/README.md#unique_ptr)
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
-- [Effective Modern C++](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
+- [**<Effective Modern C++>**](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)
         * [Understand ***auto*** type deduction](./Effective-Modern-C++/Item-02)
@@ -38,6 +38,7 @@ Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effect
 		* [Prefer **const_iterator**s to **iterator**s](./Effective-Modern-C++/Item-13)
 		* [Declare functions **noexcept** if they won't emit exceptions](./Effective-Modern-C++/Item-14)
         * [Use **constexpr** whenever possible](./Effective-Modern-C++/Item-15)
+		* [Make **const** member functions thread safe](./Effective-Modern-C++/Item-16)
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
 		* [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
