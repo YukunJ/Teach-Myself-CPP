@@ -6,7 +6,11 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 Aside from book reading notes, mostly I will be borrowing good resources from all over the repos on github, and re-implement them for deepening understanding. Sources are pointed out in each on.
 
-Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effective-Modern-CPP.pdf) to quickly grasp the new features since C++11/14.
+I finished reading on [\<Effective C++\>](https://www.oreilly.com/library/view/effective-c-55/0321334876/) last year to learn some good practices since C++98.
+
+Currently I am reading on [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/) to quickly grasp the new features since C++11/14.
+
+And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effective-stl/9780321545183/) afterwards to familiarize myself more with **STL**.
 
 ## Content
 
@@ -42,7 +46,8 @@ Currently I am reading on [<Effective Modern C++>](./Effective-Modern-C++/Effect
         * [Understand special member function generation](./Effective-Modern-C++/Item-17)
 	* Smart Pointers
 		* [Use **std::unique_ptr** for exclusive-ownership resource management](./Effective-Modern-C++/Item-18) 
-        * [Use **std::shared_ptr** for shared-ownership resource management](./Effective-Modern-C++/Item-19)       
+        		* [Use **std::shared_ptr** for shared-ownership resource management](./Effective-Modern-C++/Item-19)
+		* [Use **std::weak_ptr** for **std::shared_ptr**-like pointers that can dangle](./Effective-Modern-C++/Item-20)   
 	* Rvalue References, Move Semantics, and Perfect Forwarding
         * [Understand **std::move** and **std::forward**](./Effective-Modern-C++/Item-23)
         * [Distinguish universal references from rvalue references](./Effective-Modern-C++/Item-24)
