@@ -49,6 +49,7 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
         * [Use **std::shared_ptr** for shared-ownership resource management](./Effective-Modern-C++/Item-19)
 		* [Use **std::weak_ptr** for **std::shared_ptr**-like pointers that can dangle](./Effective-Modern-C++/Item-20)   
 		* [Prefer **std::make_unique** and **std::make_shared** to direct use of **new**](./Effective-Modern-C++/Item-21)   
+		* [When using the **Pimpl** Idiom, define special member functions in the implementation file](./Effective-Modern-C++/Item-22)   
 	* Rvalue References, Move Semantics, and Perfect Forwarding
         * [Understand **std::move** and **std::forward**](./Effective-Modern-C++/Item-23)
         * [Distinguish universal references from rvalue references](./Effective-Modern-C++/Item-24)
