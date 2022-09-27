@@ -56,6 +56,7 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
         * [Use **std::move** on rvalue references, **std::forward** on universal references](./Effective-Modern-C++/Item-25)
 		* [Avoid overloading on universal references](./Effective-Modern-C++/Item-26)
 		* [Familiarize yourself with alternatives to overloading on universal references](./Effective-Modern-C++/Item-27)
+		* [Understand reference collapsing](./Effective-Modern-C++/Item-28)
 	* Lambda Expressions
 	* The Concurrency API
 	* Tweaks
