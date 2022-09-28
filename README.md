@@ -58,6 +58,7 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Familiarize yourself with alternatives to overloading on universal references](./Effective-Modern-C++/Item-27)
 		* [Understand reference collapsing](./Effective-Modern-C++/Item-28)
 		* [Assume that move operations are not present, not cheap, and not used](./Effective-Modern-C++/Item-29)
+		* [Familiarize yourself with perfect forwarding failure cases](./Effective-Modern-C++/Item-30)
 	* Lambda Expressions
 	* The Concurrency API
 	* Tweaks
