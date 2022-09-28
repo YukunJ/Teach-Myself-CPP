@@ -8,7 +8,9 @@ Move semantics is arguably one of the most important features in C++11. In good 
 
 Firstly, many types fails to support move semantics. If the legacy code base you are working with makes no modifications for C++11, move semantics is probably not going to help you. Recall although compiler might generate default move operations for the class, it's conditioned upon that the class declares no copy operations, move operations or destructors. Data members or base classes of types that have disabled moving will also suppress compiler-generated move operations.
 
-Secondly, sometimes the move operations are just not as cheap as you might imagine. Consider **std::array**, it has an underlying array that store the elements contained. Therefore, move operations run in **O(n)** time instead of **O(1)** time, not as easy as just copying over a pointer. (Although arguably if the object it contains supports move semantics, it might do some good).
+Secondly, sometimes the move operations are just not as cheap as you might imagine. Consider **std::array** in the below picture, it has an underlying array that store the elements contained. Therefore, move operations run in **O(n)** time instead of **O(1)** time, not as easy as just copying over a pointer. (Although arguably if the object it contains supports move semantics, it might do some good).
+
+![avatar](./array.png)
 
 Thirdly, even if the type supports move operations, it might not be usable. Some seemingly sure-safe move situations can end up making copies. Some **STL** containers offer strong exception satefy guarantee. The underlying copy operations may be replaced with move operations only if the move operations are known to not throw.
 
