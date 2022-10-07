@@ -60,5 +60,6 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Assume that move operations are not present, not cheap, and not used](./Effective-Modern-C++/Item-29)
 		* [Familiarize yourself with perfect forwarding failure cases](./Effective-Modern-C++/Item-30)
 	* Lambda Expressions
+		* [Avoid default capture modes](./Effective-Modern-C++/Item-31)
 	* The Concurrency API
 	* Tweaks
