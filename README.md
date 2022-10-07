@@ -61,5 +61,6 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Familiarize yourself with perfect forwarding failure cases](./Effective-Modern-C++/Item-30)
 	* Lambda Expressions
 		* [Avoid default capture modes](./Effective-Modern-C++/Item-31)
+		* [Use init capture to move objects into closures](./Effective-Modern-C++/Item-32)
 	* The Concurrency API
 	* Tweaks
