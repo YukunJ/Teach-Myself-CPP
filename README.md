@@ -63,5 +63,6 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Avoid default capture modes](./Effective-Modern-C++/Item-31)
 		* [Use init capture to move objects into closures](./Effective-Modern-C++/Item-32)
 		* [Use **decltype** on **auto&&** parameters to **std::forward** them](./Effective-Modern-C++/Item-33)
+		* [Prefer lambdas to **std::bind**](./Effective-Modern-C++/Item-34)
 	* The Concurrency API
 	* Tweaks
