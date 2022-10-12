@@ -65,4 +65,5 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Use **decltype** on **auto&&** parameters to **std::forward** them](./Effective-Modern-C++/Item-33)
 		* [Prefer lambdas to **std::bind**](./Effective-Modern-C++/Item-34)
 	* The Concurrency API
+		* [Prefer task-based programming to thread-based](./Effective-Modern-C++/Item-35)
 	* Tweaks
