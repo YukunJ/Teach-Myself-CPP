@@ -6,11 +6,14 @@ I learned traditional C++98 a few years ago and didn't quite work on this progra
 
 Aside from book reading notes, mostly I will be borrowing good resources from all over the repos on github, and re-implement them for deepening understanding. Sources are pointed out in each on.
 
-I finished reading on [\<Effective C++\>](https://www.oreilly.com/library/view/effective-c-55/0321334876/) last year to learn some good practices since C++98.
+I finished reading on 
+
++ [\<Effective C++\>](https://www.oreilly.com/library/view/effective-c-55/0321334876/)
+
++ [\<Effetive STL\>](https://www.oreilly.com/library/view/effective-stl/9780321545183/)
 
 Currently I am reading on [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/) to quickly grasp the new features since C++11/14.
 
-And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effective-stl/9780321545183/) afterwards to familiarize myself more with **STL**.
 
 ## Content
 
@@ -66,4 +69,5 @@ And I plan to read [\<Effetive STL\>](https://www.oreilly.com/library/view/effec
 		* [Prefer lambdas to **std::bind**](./Effective-Modern-C++/Item-34)
 	* The Concurrency API
 		* [Prefer task-based programming to thread-based](./Effective-Modern-C++/Item-35)
+		* [Specify **std::launch::async** if asynchronicity is essential](./Effective-Modern-C++/Item-36)
 	* Tweaks
