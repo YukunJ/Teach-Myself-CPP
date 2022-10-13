@@ -14,6 +14,7 @@ I finished reading on
 
 Currently I am reading on [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/) to quickly grasp the new features since C++11/14.
 
+And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly.com/library/view/more-effective-c/9780321545190/).
 
 ## Content
 
@@ -70,4 +71,5 @@ Currently I am reading on [\<Effective Modern C++\>](https://www.oreilly.com/lib
 	* The Concurrency API
 		* [Prefer task-based programming to thread-based](./Effective-Modern-C++/Item-35)
 		* [Specify **std::launch::async** if asynchronicity is essential](./Effective-Modern-C++/Item-36)
+		* [Make **std::thread**s unjoinable on all paths](./Effective-Modern-C++/Item-37)
 	* Tweaks
