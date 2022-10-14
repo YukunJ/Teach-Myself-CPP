@@ -73,4 +73,5 @@ And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly
 		* [Specify **std::launch::async** if asynchronicity is essential](./Effective-Modern-C++/Item-36)
 		* [Make **std::thread**s unjoinable on all paths](./Effective-Modern-C++/Item-37)
 		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
+		* [Consider **void** futures for one-shot event communication](./Effective-Modern-C++/Item-39)
 	* Tweaks
