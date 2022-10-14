@@ -72,4 +72,5 @@ And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly
 		* [Prefer task-based programming to thread-based](./Effective-Modern-C++/Item-35)
 		* [Specify **std::launch::async** if asynchronicity is essential](./Effective-Modern-C++/Item-36)
 		* [Make **std::thread**s unjoinable on all paths](./Effective-Modern-C++/Item-37)
+		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
 	* Tweaks
