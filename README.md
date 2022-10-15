@@ -12,9 +12,9 @@ I finished reading on
 
 + [\<Effetive STL\>](https://www.oreilly.com/library/view/effective-stl/9780321545183/)
 
-Currently I am reading on [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/) to quickly grasp the new features since C++11/14.
++ [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/)
 
-And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly.com/library/view/more-effective-c/9780321545190/).
+The next book I plan to read is [\<More Effective C++\>](https://www.oreilly.com/library/view/more-effective-c/9780321545190/).
 
 ## Content
 
@@ -75,4 +75,3 @@ And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly
 		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
 		* [Consider **void** futures for one-shot event communication](./Effective-Modern-C++/Item-39)
 		* [Use **std::atomic** for concurrency, **volatile** for special memory](./Effective-Modern-C++/Item-40)
-	* Tweaks
