@@ -74,4 +74,5 @@ And the next book I plan to read is [\<More Effective C++\>](https://www.oreilly
 		* [Make **std::thread**s unjoinable on all paths](./Effective-Modern-C++/Item-37)
 		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
 		* [Consider **void** futures for one-shot event communication](./Effective-Modern-C++/Item-39)
+		* [Use **std::atomic** for concurrency, **volatile** for special memory](./Effective-Modern-C++/Item-40)
 	* Tweaks
