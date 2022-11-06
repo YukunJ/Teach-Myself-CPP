@@ -10,11 +10,14 @@ I finished reading on
 
 + [\<Effective C++\>](https://www.oreilly.com/library/view/effective-c-55/0321334876/)
 
++ [\<More Effective C++\>](https://www.oreilly.com/library/view/more-effective-c/9780321545190/)
+
 + [\<Effetive STL\>](https://www.oreilly.com/library/view/effective-stl/9780321545183/)
 
 + [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/)
 
-The next book I plan to read is [\<More Effective C++\>](https://www.oreilly.com/library/view/more-effective-c/9780321545190/).
+The next step I plan to practice more on the socket network programming on the Linux system, referencing the open-source book [<Beej’s Guide to Network Programming Using Internet Sockets>](https://beej.us/guide/bgnet/).
+
 
 ## Content
 
