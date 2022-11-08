@@ -34,3 +34,113 @@ There are two kinds of **IP Addresses**: IPv4 and IPv6. IPv4 is made up of 32 bi
 **Subnet** is the way for organizations to split up the "organizational indicator" and "host indicator". For example, with IPv4, `192.0.2.12` could mean that, the first 3 bytes `192.0.2.00` is the organization indicator, and this leaves the host 1 bytes. Namely there could be `2^8` hosts in this organization. The host is `12` in this case.
 
 **Port Number** is a 16-bit number that helps multi-plexing. Think of the IP address as the street address of a hotel, and the port number is the room number of the hotel. It always the network to distinguish between different services running on the same host machine.
+
+**Byte Order** might differ by different machine architectures, i.e. Little Endian or Big Endian. To ensure the portability and comptability of our program, we can use convert functions:
+
+| **Function** | **Description**       |
+|--------------|-----------------------|
+| `htons()`     | host to network short |
+| `htonl()`     | host to network long  |
+| `ntohs()`      | network to host short |
+| `ntohl()`      | network to host long  |
+
+A **socket descriptor** is just a regular `int` type.
+
+A `struct addrinfo` is used to prepare and store the socket address structures for subsequent use.
+
+```C
+struct addrinfo {
+  int 			ai_flags;	// AI_PASSIVE, AI_CANONNAME, etc.
+  int 			ai_family;	// AF_INET, AF_INET6, AF_UNSPEC
+  int 			ai_socktype;	// SOCK_STREAM, SOCK_DGRAM
+  int 			ai_protocol;	// use 0 for "any"
+  size_t 		ai_addrlen;	// size of ai_addr in bytes
+  struct sockaddr 	*ai_addr;	// struct sockaddr_in or _in6
+  char 			*ai_canonname;	// full canonical hostname
+
+  struct addrinfo 	*ai_next;	// linked list, next node
+};
+```
+
+We can load this up by calling `getaddinfo()`, which returns a linked list of such structs. 
+
+We see the `ai_addr` is a pointer to a `struct sockaddr`, which stores either IPv4 or IPv6 socket address information. Its generally format is as follows:
+
+```C
+struct sockaddr {
+  unsigned short	sa_family;	// address family, AF_INET or AF_INET6
+  char			sa_data[14];	// 14 bytes of protocol address
+};
+```
+
+When we know this is an IPv4 sock address, we can cast this `struct sockaddr *` to `struct sockaddr_in *`, whose 16 bytes layout is as follows:
+
+```C
+// IPv4 only
+struct sockaddr_in {
+  short int		sin_family;	// Address family, AF_INET
+  unsigned short int 	sin_port;	// Port number
+  struct in_addr	sin_addr;	// Internet address
+  unsigned char		sin_zero[8];	// Padding
+};
+```
+
+Notice the `sin_port` here must be in network byte order by using `htons()`. And the `struct in_addr sin_addr` is just a finaly wrapper for the 4 bytes IPv4 address.
+
+```C
+struct in_addr {
+  uint32_t s_addr;	// 4 Bytes IPv4 address in network order
+};
+```
+
+On the other hand, if the address family is `AF_INET6` IPv6, a similar structure exists. We can cast `struct sockaddr *` to `struct sockaddr_in6 *` with layout:
+
+```C
+// IPv6 only
+struct sockaddr_in6 {
+  u_int16_t		sin6_family;	// Address family, AF_INET6
+  u_int16_t 		sin6_port;	// Port number
+  u_int32_t		sin6_flowinfo;	// IPv6 flow information
+  struct in6_addr	sin6_addr;	// IPv6 address
+  u_int32_t		sin6_scope_id;	// Scope ID
+};
+
+// the final wrapper for 16 bytes IPv6 address
+struct in6_addr {
+  unsigned char 	s6_addr[16];	// IPv6 address
+};
+```
+
+It would be tedious to fill out the string representation of an IP Address into such struct and vice verse. Therefore there are utility functions to help us do so.
+
+Firstly, `inet_pton()` convert a string IP address into the network representation:
+
+```C
+struct sockaddr_in sa;	// IPv4
+struct sockaddr_in6 sa6;// IPv6
+
+inet_pton(AF_INET, "10.12.110.57", &(sa.sin_addr));		// IPv4
+inet_pton(AF_INET6, "2001:db8:63b3:1::3490", &(sa6.sin6_addr));	// IPv6
+```
+
+Conversely, `inet_ntop()` helps to convert the IP Address back to string representation.
+
+```C
+// IPv4
+char ip4[INET_ADDRSTRLEN];
+struct sockaddr_in sa;
+
+inet_ntop(AF_INET, &(sa.sin_addr), ip4, INET_ADDRSTRLEN);
+printf("The IPv4 address is: %s\n", ip4);
+
+// IPv6
+char ip6[INET6_ADDRSTRLEN];
+struct sockaddr_in6 sa6;
+
+inet_pton(AF_INET6, &(sa6.sin6_addr), ip6, INET6_ADDRSTRLEN);
+printf("The IPv6 address is: %s\n", ip6);
+```
+
+---
+
+#### System Calls or Bust
