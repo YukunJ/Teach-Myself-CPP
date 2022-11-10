@@ -144,3 +144,65 @@ printf("The IPv6 address is: %s\n", ip6);
 ---
 
 #### System Calls or Bust
+
+1. `getaddrinfo()`
+
+we will use this function to do the DNS lookups and fill in the necessary socket struct information for us automatically. 
+
+```C
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+int getaddrinfo(const char *node,	// e.g. "www.example.com" or IP
+		const char *service,	// e.g. "http" or port number
+		const struct addrinfo *hints,
+		struct addrinfo **res);
+```
+
+The `node` parameter is the host name or an IP address to connect to. The 	`service` parameter could be a well-knwn service like "http" or "ftp" or just the direct port number. The `hints` parameter points to a `struct addrinfo` that you have already filled out with relevant requirements. And then the function will populate the `res` with the linked list of information.
+
+For example, if you're a server that listen on your own host's IP address with port 3490:
+
+```C
+int status;
+struct addrinfo hints;
+struct addrinfo *servinfo;		// will point to the results
+
+memset(&hints, 0, sizeof hints);	// make sure the struct is empty
+hints.ai_family = AF_UNSPEC;		// don't care IPv4 or IPv6
+hints.ai_socktype = SOCK_STREAM;	// TCP stream sockets
+hints.ai_flags = AI_PASSIVE;		// fill in my IP for me
+
+if ((status = getaddrinfo(NULL, "3490", &hints, &servinfo)) != 0) {
+  fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+  exit(1);
+}
+
+...
+
+freeaddrinfo(servinfo);	// free the linked list
+```
+
+Similarly, if you're a client wishing to connect ot "www.example.net" on port 3490:
+
+```C
+int status;
+struct addrinfo hints;
+struct addrinfo *servinfo;		// will point to the results
+
+memset(&hints, 0, sizeof hints);	// make sure the struct is empty
+hints.ai_family = AF_UNSPEC;		// dont' care IPv4 or IPv6
+hints.ai_socktype = SOCK_STREAM;	// TCP stream sockets
+
+// get ready to connect
+status = getaddrinfo("www.example.net", "3490", &hints, &servinfo);
+
+...
+
+freeaddrinfo(servinfo);	// free the linked list
+```
+
+[Here](./sample_src/showip.c) is a complete sample program to show the socket information given a host name for reference.
+
+2. `socket()`
