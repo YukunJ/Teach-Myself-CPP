@@ -268,3 +268,42 @@ bind(sockfd, res->ai_addr, res->ai_addrlen);
 ```
 
 One thing to watchout when calling `bind()` is that, all ports below 1024 are **RESERVED** for the kernel. As a user, you may choose between 1024 to 65535. And sometimes, when you want to rerun the same program again to listen on a same port, the `bind()` might fail and tell you that "Address already in use". It's because the socket that was connected might still be hanging around in the kernel. You may call `setsockopt()` to allow reusage of the same port.
+
+And be sure to check the return status of `bind()`, where `errno` might be set.
+
+4. `connect()`
+
+`connect()` gives the functionality to associate a socket descriptor to a remote listener, assuming we're the client role.
+
+```C
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int connect(int sockfd, struct sockaddr *serv_addr, int addrlen);
+```
+
+The parameters are easy to understand. `sockfd` is the socket descriptor we want to associaed it with. `serv_addr` is pointer to `struct sockaddr` which stores the destination IP and port number, with `addrlen` being the length in bytes of the destination address struct.
+
+Let's see an example where we make a socket connection to "www.example.com" on port 3490:
+
+```C
+struct addrinfo hints, *res;
+int sockfd;
+
+// first, look up destination address struct
+memeset(&hints, 0, sizeof hints);
+hints.ai_family = AF_UNSPEC;
+hints.ai_socktype = SOCK_STREAM;
+
+getaddrinfo("www.example.com", "3490", &hints, &res);
+
+// make a socket
+sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+
+// connnect
+connect(sockfd, res->ai_addr, res->ai_addrlen);
+```
+
+Notice here, as a client side, once we get the socket descriptor, we directly jump to `connect()` instead of calling `bind()` first. Because we only care where we're going (the remote port). The kernel will choose a local port for us.
+
+5. `listen()`
