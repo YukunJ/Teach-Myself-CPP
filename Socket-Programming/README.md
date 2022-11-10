@@ -307,3 +307,72 @@ connect(sockfd, res->ai_addr, res->ai_addrlen);
 Notice here, as a client side, once we get the socket descriptor, we directly jump to `connect()` instead of calling `bind()` first. Because we only care where we're going (the remote port). The kernel will choose a local port for us.
 
 5. `listen()`
+
+If we are servers who are waiting for incoming connections, then we need to follow two steps: `listen()` and `accept()`. The `listen()` call is fairly simple:
+
+```C
+int listen(int sockfd, int backlog);
+```
+
+One thing in particular is the `backlog` parameter. It is the number of connections allowed on the incoming queue, because incoming connections are going to wait until you call `accept()`, and this is the limit on how many can queue up. By default, this value is usually **20** on most systems.
+
+In short summary, as a server, the whole sequence of steps we need to walk through is:
+
++ `getaddrinfo()`
++ `socket()`
++ `bind()`
++ `listen()`
++ `accept()`
+
+6. `accept()`
+
+The `accept()` is a bit weird that it will give the server a new socker descriptor everytime it builds up a connection with incomings, i.e. at the same time we will have two socket descriptors: one for listening more incoming connections, one for communicating with the client we just accepted.
+
+```C
+#inlcude <sys/types.h>
+#include <sys/socket.h>
+
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+
+The `sockfd` is the `listen()`ing socket descriptor. `addr` will be a pointer to a local `struct sockaddr_storage` where information about the incoming connection will be filled in. `addrlen` is the integer variable that should be set ot `sizeof(struct sockaddr_storage)`.
+
+Here is a sample code fragment for the listener side:
+
+```C
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#define MYPORT "3490"		// the port users will be connecting to
+#define BACKLOG 10		// how many pending connections queue will hold
+
+int main() {
+  struct sockaddr_storage their_addr;
+  socklen_t addr_size;
+  struct addrinfo hints, *res;
+  int sockfd, new_fd;
+  
+  memset(&hints, 0, sizeof hints);
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM; 
+  hints.ai_flags = AI_PASSIVE;	// fill in my IP for me
+  
+  getaddrinfo(NULL, MYPORT, &hints, &res);
+
+  sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+  bind(sockfd, res->ai_addr, res->ai_addrlen);
+  listen(sockfd, BACKLOG);
+
+  addr_size = sizeof their_addr;
+  new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &addr_size);
+
+  // ready to communicate on socket descriptor new_fd
+  ...
+}
+```
+
+7. `send()` and `recv()`
+
+
