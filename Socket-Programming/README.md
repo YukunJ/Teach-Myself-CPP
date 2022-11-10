@@ -206,3 +206,29 @@ freeaddrinfo(servinfo);	// free the linked list
 [Here](./sample_src/showip.c) is a complete sample program to show the socket information given a host name for reference.
 
 2. `socket()`
+
+This function allow you to say what kind of socket you want in term of IPv4 or IPv6, stream or datagram, and TCP or UDP.
+
+```C
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int socket(int domain, int type, int protocol);
+```
+
+`domain` is either `PF_INET` or `PF_INET6`, it's fine to just pass in `AF_INET` or `AF_INET6`. `type` is `SOCK_STREAM` or `SOCK_DGRAM`, and `protocol` can be set to `0` to choose the proper protocol for the given type, or you can call the function `getprotobyname()` to lookup the protocol you want, either "tcp" or "udp".
+
+In most of cases, what we should really need is not to hardcode, but rather pass in the information got from `getaddrinfo()` function:
+
+```C
+int s;
+struct addrinfo hints, *res;
+
+// do the loop up
+// assume we have already filled in "hints" struct
+getaddrinfo("www.example.com", "http", &hints, &res);
+
+s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+```
+
+The call to `socket()` returns an integer as the **socket descriptor**, or -1 on error. The global variable `errno` is set to the error's value if it happens. We definitely would need to do more error-checking there.
