@@ -232,3 +232,39 @@ s = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 ```
 
 The call to `socket()` returns an integer as the **socket descriptor**, or -1 on error. The global variable `errno` is set to the error's value if it happens. We definitely would need to do more error-checking there.
+
+3. `bind()`
+
+Once we have a socker descriptor, we might want to associate it with a port on the local machine. This is necessary for we're a server and is about to call `listen()` for incoming connections on a specific port. If we're a client who is about to do `connect()`, this step is probably unnecessary.
+
+```C
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int bind(int sockfd, struct sockaddr *my_addr, int addrlen);
+```
+
+`sockfd` is the socket descriptor returned by `socket()`. `my_addr` is a pointer to `struct sockaddr` that contains our port and IP Address. `addrlen` is the length in bytes of that address.
+
+Let's look at an example that binds the socket to the host on port 3490:
+
+```C
+struct addrinfo hints, *res;
+int sockfd;
+
+// first look up address structs with getaddrinfo()
+memset(&hints, 0, sizeof hints);
+hints.ai_family = AF_UNSPEC;		// use IPv4 or IPv6
+hints.ai_socktype = SOCK_STREAM;
+hints.ai_flags = AI_PASSIVE;		// fill in my IP for me
+
+getaddrinfo(NULL, "3490", &hints, &res);
+
+// make a socket
+sockfd = socket(res->ai_family, res->ai_socktyoe, res->ai_protocol);
+
+// bind it to the port we passed in to getaddrinfo()
+bind(sockfd, res->ai_addr, res->ai_addrlen);
+```
+
+One thing to watchout when calling `bind()` is that, all ports below 1024 are **RESERVED** for the kernel. As a user, you may choose between 1024 to 65535. And sometimes, when you want to rerun the same program again to listen on a same port, the `bind()` might fail and tell you that "Address already in use". It's because the socket that was connected might still be hanging around in the kernel. You may call `setsockopt()` to allow reusage of the same port.
