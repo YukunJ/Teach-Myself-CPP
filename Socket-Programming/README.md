@@ -375,4 +375,50 @@ int main() {
 
 7. `send()` and `recv()`
 
+These two functions let us communicate over stream sockets or connected datagram sockets. (For unconnected datagram sockets, see `sendto()` and `recvfrom()`.
 
+The `send()` call:
+
+```C
+int send(int sockfd, const void *msg, int len, int flags);
+```
+
+`sockfd` is the socket descriptor we get from either `socket()` as a client or `accept()` as the server. `msg` is a pointer to the message we want to send, and `len` is the length of that data in bytes. `flag` could just be set to 0 in most cases.
+
+For example:
+
+```C
+char *msg = "Yukun is here!";
+int len, bytes_sent;
+... // set up
+len = str(msg);
+bytes_sent = send(sockfd, msg, len, 0);
+```
+
+As you may have noticed, `send()` returns the number of bytes actually sent out, which might be less than the number we told it to send. We have to resend the rest of bytes after noticing that `bytes_send < len`. Typically, if the packet is less than 1K, it will be able to sent in one call.
+
+The `recv()` call is similar in many aspects:
+
+```C
+int recv(int sockfd, void *buf, int len, int flags);
+```
+
+`sockfd` is the socket descriptor to read from, `buf` is used to store the message we receive with `len` being the maximum length of the buffer. And `flags` could also be set to 0 in most cases.
+
+In a similar nature, `recv()` returns how many bytes it actually read and place into the `buf`.
+
+8. `sendto()` and `recvfrom()`
+
+These two functions are the peer versions of the two mentioned above, without a connected socket. As a price of not having a connected socket, we need to provide/receive such information along with each call to `sendto()` and `recvfrom()`. 
+
+We don't go too deep into these two functions as they are rarely used. Below are their function signatures:
+
+```C
+int sendto(int sockfd, const void *msg, int len, unsigned int flags,
+		const struct sockaddr *to, socklen_t tolen);
+
+int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
+		struct sockaddr *from, int *fromlen);
+```
+
+9. `close()` and `shutdown()`
