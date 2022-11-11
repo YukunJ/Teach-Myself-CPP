@@ -422,3 +422,64 @@ int recvfrom(int sockfd, void *buf, int len, unsigned int flags,
 ```
 
 9. `close()` and `shutdown()`
+
+We can just use the regular Unix file descriptor `close()` function:
+
+```C
+close(sockfd);
+```
+
+This will prevent any further reads and writes to the socket. Such attempts will receive an error.
+
+In case if we want to have more fine grained control over how the socket closes, we can esort to `shutdown()` function:
+
+```C
+int shutdown(int sockfd, int how);
+```
+
+where `sockfd` is the socker file descriptor we want to shutdown, the `how` controls how this is done as follows:
+
+| **_how_** | Effect                                                     |
+|-------|------------------------------------------------------------|
+| 0     | Further receives are disallowed                            |
+| 1     | Further sends are disallowed                               |
+| 2     | Further sends and receives are disallowed (like _close()_) |
+
+Important to know is that `shutdown()` doesn't actually close the socket file descriptor even if you supply `how=2`. It just changes its usability. To free a socket descriptor, you have to call `close()`.
+
+10. `getpeername()`
+
+This simple function tells you information about the other end of a connected stream socket
+
+```C
+#include <sys/socket.h>
+
+int getpeername(int sockfd, struct sockaddr *addr, int *addrlen);
+```
+
+`sockfd` is the descriptor of the connected stream socket, `addr` is a pointer to a `struct sockaddr` that will be filled by information of the other side of connection, and `addrlen` should point to an `int` who is initialized to be `sizeof(struct sockaddr)`.
+
+Once we have the other side's information, we can call `inet_ntop()`, `getnameinfo()`, `gethostbyaddr()` to get more readable information.
+
+11. `gethostname()`
+
+To retrieve the local host name of the computer that the program is running on, we call `gethostname()`. The result could be further passed to `gethostbyname()` to retrieve the local IP Address of local machine.
+
+```C
+#include <unistd.h>
+
+int gethostname(char *hostname, size_t size);
+```
+
+`hostname` is a pointer to an char array that will be filled with hostname, and `size` is the max size of this char array.
+
+---
+#### Client-Server Full Example
+
+We will build a simple client-server program in this section. The interactios between client and server are summarized in the graph below.
+
+![avatar](./pics/client_server.png)
+
+Typically, there will only one server handling multiple incoming clients' requests. In this section, we achieve so by using `fork()` to create a new process for each one incoming client.
+
+
