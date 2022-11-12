@@ -482,4 +482,9 @@ We will build a simple client-server program in this section. The interactios be
 
 Typically, there will only one server handling multiple incoming clients' requests. In this section, we achieve so by using `fork()` to create a new process for each one incoming client.
 
+You can refer to the sample, and experiment it out just using the local address `127.0.0.1`
++ [client.c](./sample_src/client.c) 
++ [server.c](./sample_src/server.c) 
 
+---
+#### Advanced Techniques
