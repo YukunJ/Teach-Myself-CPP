@@ -488,3 +488,55 @@ You can refer to the sample, and experiment it out just using the local address 
 
 ---
 #### Advanced Techniques
+
+1. **Blocking**
+
+By default, many socket function calls are **blocking**, for example `accept()`, `recv()`, etc. If we don't want a socket to be blocking, we need to make a call to `fcntl()`:
+
+```C
+#include <unistd.h>
+#include <fcntl.h>
+...
+sockfd = socket(PF_INET, SOCK_STREAM, 0);
+fcntl(sockfd, F_SETFL, O_NONBLOCK);
+...
+```
+
+By setting the socket non-blocking, you can achieve the poll functionality because, if you try to read from a non-blockin socket with no data, it will return `-1` with `errno` be set to `EAGAIN` or `EWOULDBLOCK`.
+
+However, generally speaking this is a bad idea to achieve polling. It wastes CPU time if you write code in a busy-wait way to check for arrival data. See next section's `poll()` function for a better approach.
+
+2. `poll()` 
+
+Ironically, to avoid polling using too much CPU time, we need to call the function `poll()`.
+
+This is a system call that will let your program sleep to save CPU time, and only wake you up when timeout or some pre-specified conditions are satisfied. 
+
+The general strategy is to keep an array of `struct pollfd` with information about which socket descriptors we want to monitor and what kind of events we want to monitor for. Particularly, a `listen()`ing socket will return "ready to read" when there is a new incoming connection ready to be `accept()`ed.
+
+```C
+#include <poll.h>
+
+struct pollfd {
+  int fd;		// the socket descriptor
+  short events;		// bitmap of event we want to monitor for
+  short revents;	// bitmap of event that actually occurred
+};
+
+int poll(struct pollfd fds[], nfds_t nfds, int timeout);
+```
+
+`poll` requires an array of `struct pollfd` to be monitored, and `nfds` refers to how many descriptors are there in the array to be monitored, and `timeout` is in milliseconds. Upon return, it returns the number of elements in the array that have had an event occur.
+
+For the `struct pollfd`, the `fd` is the file descriptor we want to monitor for. And for `events` and `revents`, they are described by the following Macros:
+
+| **Macro** | **Description**                                                 |
+|-----------|-----------------------------------------------------------------|
+| POLLIN    | Alert me when data is ready to `recv()` on this socket            |
+| POLLOUT   | Alert me when I can `send()` data to this socket without blocking |
+
+You can refer to a simple sample code [poll_stdin.c](./sample_src/poll_stdin.c) for illustration of how to use the `poll()` function.
+
+After mastering this technique, actually we can modify the previous server program so that it maintain an array of socket descriptors for the incoming new connections and use `poll()` to handle them. We may even broadcast messages to every clients to achieve the functionality of a multi-user chatroom!
+
+3. `select()` 
