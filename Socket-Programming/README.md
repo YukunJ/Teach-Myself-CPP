@@ -4,6 +4,8 @@ In this section, we will first go over some key concepts about **socket network 
 
 Our main reference is the open source book <[Network Programming Using Internet Sockets](https://beej.us/guide/bgnet/)> by Beej.
 
+For those impatient, I make up a utility header file [socket_utils.h](./sample_src/socket_utils.h). Feel free to use it.
+
 ---
 #### What is a Socket?
 
