@@ -577,3 +577,28 @@ You can refer to a simple sample code [select_stdin.c](./sample_src/select_stdin
 Notably, this function should also give us some ideas on how to leverage previous server program to handle multiple clients and make it into multi-user chatroom.
 
 4. Handling Partial `send()`s
+
+Remember back in the section on `send()`, we said that the operating system might not be able to send out all the bytes you require. For example, you ask to send out 1000 bytes of a buffer, the `send()` function returns 500, meaning it only send out 500 bytes. There are 500 bytes remaining sitting in the buffer. We need to make sure send out the remaining:
+
+```C
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int sendall(int s, char *buf, int *len) {
+  int total = 0;		// how many bytes we've sent
+  int bytesleft = *len;		// how many we have left to send
+  int n;
+
+  while (total < *len) {
+    n = send(s, buf + total, bytesleft, 0);
+    if (n == -1) break;
+    total += n;
+    bytesleft -= n;
+  }
+
+  *len = total;			// record number actually sent here
+  
+  return (n == -1) ? -1 : 0;	// return -1 on failure, 0 on success 
+}
+```
+
