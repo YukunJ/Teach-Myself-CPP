@@ -535,8 +535,45 @@ For the `struct pollfd`, the `fd` is the file descriptor we want to monitor for.
 | POLLIN    | Alert me when data is ready to `recv()` on this socket            |
 | POLLOUT   | Alert me when I can `send()` data to this socket without blocking |
 
-You can refer to a simple sample code [poll_stdin.c](./sample_src/poll_stdin.c) for illustration of how to use the `poll()` function.
+You can refer to a simple sample code [poll_stdin.c](./sample_src/poll_stdin.c) for an illustration of how to use the `poll()` function.
 
 After mastering this technique, actually we can modify the previous server program so that it maintain an array of socket descriptors for the incoming new connections and use `poll()` to handle them. We may even broadcast messages to every clients to achieve the functionality of a multi-user chatroom!
 
 3. `select()` 
+
+`select()` is actually pretty similar to `poll()` function above that enables you to monitor multiple socket descriptors without blocking.
+
+Let's see how it works:
+
+```C
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+sturct timeval {
+  int tv_sec;	// seconds
+  int tv_usec;	// microseconds
+};
+
+int select(int numfds, fd_set *readfds, fd_set *writefds,
+		fd_set *exceptfds, struct timeval *timeout);
+```
+
+This function monitors **sets** of file descriptors, in particular `readfds`, `writefds` and `exceptfds`. The parameter `numfds` should be set to the value of highest file descriptor plus one. And the `struct timeval` is the timeout setting.
+
+To operate on the `fd_set` data structure, here is a few Macros we may utilize:
+
+| **Function**                   | **Description**                  |
+|--------------------------------|----------------------------------|
+| `FD_SET(int fd, fd_set *set)`   | Add `fd` to the set               
+| `FD_CLR(int fd, fd_set *set)`   | Remove `fd` from the set          |
+| `FD_ISSET(int fd, fd_set *set)` | Return true if `fd` is in the set |
+| `FD_ZERO(fd_set *set)`         | Clear all entries from the set  |
+
+A few things for notice. If you don't care about a set in the `select()`, just set it to `NULL` to be ignored. And you may set the paramter `timeout` to `NULL` which means it never timeouts, or set it to `0`, which will effectively poll all the file descriptors in the sets.
+
+You can refer to a simple sample code [select_stdin.c](./sample_src/select_stdin.c) for an illustration of how to use the `select()` function.
+
+Notably, this function should also give us some ideas on how to leverage previous server program to handle multiple clients and make it into multi-user chatroom.
+
+4. Handling Partial `send()`s
