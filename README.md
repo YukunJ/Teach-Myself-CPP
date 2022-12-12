@@ -16,19 +16,21 @@ I finished reading on
 
 + [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/)
 
-The next step I plan to practice more on the socket network programming on the Linux system, referencing the open-source book [<Beej’s Guide to Network Programming Using Internet Sockets>](https://beej.us/guide/bgnet/).
+Currently I am reading the comprehensive book [\<Design Data-Intensive Application\>](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/) to gain the bigger idea on modern large-scale distributed data system in the Industry.
 
 
 ## Content
 
+- [Google C++ Style Guidance](https://google.github.io/styleguide/cppguide.html)
 - [Git tutorial](./Git-tutorial)
 - [Gdb tutorial](./Gdb-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
+- [Socket Programming tutorial](./Socket-Programming)
 - [How to intergate with **GoogleTest** using CMake](./CMake-googletest-tutorial)
 - [How to write a Reader-Writer lock](./ReaderWriter-lock)
-- [How to design a Key-Value store using SkipList](./KV-store-skiplist)
-- [How to design a multi-user chatroom using Socket](https://github.com/YukunJ/TurtleChat)
-- [How to write Smart pointers](./Smart_ptr)
+- [How to design a Key-Value store using **SkipList**](./KV-store-skiplist)
+- [How to design a multi-user chatroom using **Socket Programming**](https://github.com/YukunJ/TurtleChat)
+- [How to write Smart Pointers](./Smart_ptr)
     * [my **unique_ptr**](./Smart_ptr/README.md#unique_ptr)
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
 - [**<Effective Modern C++>**](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
@@ -79,4 +81,3 @@ The next step I plan to practice more on the socket network programming on the L
 		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
 		* [Consider **void** futures for one-shot event communication](./Effective-Modern-C++/Item-39)
 		* [Use **std::atomic** for concurrency, **volatile** for special memory](./Effective-Modern-C++/Item-40)
-- [Socket Programming](./Socket-Programming)
