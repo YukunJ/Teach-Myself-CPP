@@ -38,8 +38,8 @@ const int cx = x;
 const int& rx = x;
 
 f(x);		// T is int, param's type is int&
-f(cx);		// T is const int, param's type is const int
-f(rx);		// T is const int, param's type is const int
+f(cx);		// T is const int, param's type is const int&
+f(rx);		// T is const int, param's type is const int&
 ``` 
 
 If we change the type of ***f***'s parameter from **T&** to **const T&**, things change a little because **const** no longer needs to be deduced as part of **T**:
