@@ -228,3 +228,126 @@ By specifying `std::move(p)`, the ownership of `p` is transferred into internal 
 ---
 
 #### Transferring ownership of a thread 
+
+Sometimes we might want to write a function that returns a newly-created thread, or we want to pass a thread handler as an argument to a function. In both cases, we need to transfer the ownership of the thread.
+
+`std::thread` is a move-only class, which means it cannot be copied. Whenever we want to transfer its ownership, we need to explicitly call the move operations on the thread handler.
+
+However, there are some caveats we need to be careful of. Consider the following:
+
+```CPP
+void some_function();
+std::thread t1(some_function);
+std::thread t2(some_function);
+// The next line causes runtime termination
+// because t1's original thread is neither joined or detached
+t1 = std::move(t2);
+```
+
+One direct benefits of the move semantics for `std::thread` is that we can build and rely on thread wrapper class and move the thread into the wrapper, so that we are sure their lifecycle (the thread and the wrapper) will be aligned, to avoid any "reference to deallocated space problem".
+
+We can further develop the thread wrapper class we had before:
+
+```CPP
+class scoped_thread {
+private:
+  std::thread t_;
+public:
+  explicit scoped_thread(std::thread t)
+    : t_(std::move(t)) {
+    if (!t_.joinable()) {
+      throw std::logic_error("No joinable thread");
+    }
+  }
+
+  ~scoped_thread() { t_.join(); }
+
+  scoped_thread(const scoped_thread&) = delete;
+  scoped_thread& operator=(const scoped_thread&) = delete;
+};
+
+// usage
+struct func; // same as before
+void f() {
+  int some_local_state = 0;
+  scoped_thread t(std::thread(func(some_local_state)));
+  do_something_else_in_current_thread();
+  // the thread will be joined upon exiting this function frame
+}
+```
+
+The move support for `std::thread` also allows containers to store thread objects so that we could manage many threads easily:
+
+```CPP
+{
+  std::vector<std::thread> threads;
+  for (unsigned i = 0; i < 20; ++i) {
+    threads.emplace_back(do_work, i);
+  }
+
+  for (auto& thread: threads) {
+    thread.join();
+  }
+}
+```
+
+Actually there is proposal for a `joining_thread` class to be integrated into Standard library, which will join the thread automatically when its destructor is invoked. It has not made it into the STL so far. But we can readily make one by ourselves:
+
+```CPP
+class joining_thread {
+public:
+  std::thread t_;
+
+  joining_thread() noexcept = default;
+
+  template<typename Callable, typename... Args>
+  explicit joining_thread(Callable&& func, Args&&... args)
+    : t_(std::forward<Callable>(func), std::forward<Args>(args)...) {}
+
+  explicit joining_thread(std::thread t) noexcept: t_(std::move(t)) {}
+
+  joining_thread(joining_thread&& other) noexcept: t_(std::move(other.t_)) {}  
+
+  joining_thread& operator=(joining_thread&& other) noexcept {
+    if (joinable()) {
+        join();
+    }
+    t_ = std::move(other.t_);
+    return *this;
+  }
+
+  joining_thread& operator=(std::thread other) noexcept {
+    if (joinable()) {
+        join();
+    }
+    t_ = std::move(other);
+    return *this;
+  }
+
+  ~joining_thread() noexcept {
+    if (joinable()) {
+        join();
+    }
+  }
+
+  void swap(joining_thread& other) noexcept {
+    t_.swap(other.t_);
+  }
+
+  std::thread::id get_id() const noexcept { return t_.get_id(); }
+
+  bool joinable() const noexcept { return t_.joinable(); }
+
+  void join() { t_.join(); }
+
+  void detach() { t_.detach(); }
+
+  std::thread& as_thread() noexcept { return t_; }
+
+  const std::thread& as_thread() const noexcept { return t_; }
+};
+```
+
+---
+
+#### Choosing the number of threads at runtime
