@@ -351,3 +351,59 @@ public:
 ---
 
 #### Choosing the number of threads at runtime
+
+One very helpful function is `std::thread::hardware_concurrency()`. This functions returns how many hardware threads are supported by our machine. This number is important to know because we don't want to **over-launch** too many threads than what the underlying hardware supports. This is only a hint: it might return `0` if the information is not available.
+
+It's enough to know this single function for this subsection. The following is a code snippet partially achieve what `std::accumulte` does, but does it in parallel. Comments are provided in the code.
+
+```CPP
+/* individual accumulate block to be executed on a thread */
+template <typename Iterator, typename T>
+struct accumulate_block {
+  void operator()(Iterator first, Iterator last, T& result) {
+    result = std::accumulate(first, last, result);
+  }
+};
+
+template <typename Iterator, typename T>
+T parallel_accumulate(Iterator first, Iterator last, T init) {
+    const unsigned long length = std::distance(first, last);
+    if (!length) {
+        // no need to compute
+        return init;
+    }
+
+    // decide how many threads to launch
+    const unsigned long min_per_thread = 25;
+    const unsigned long max_threads = (length + min_per_thread -1) / min_per_thread;
+    const unsigned long hardware_threads = std::thread::hardware_concurrency();
+    const unsigned long thread_nums = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
+
+    // assume divide evenly
+    const unsigned long block_size = length / num_threads;
+    std::vector<T> results(num_threads);
+    std::vector<std::thread> threads(num_threads-1);
+    Iterator block_start = first;
+
+    // split into small block and assign to threads
+    for (unsigned long i = 0; i < (num_threads-1); i++) {
+        Iterator block_end = block_start;
+        std::advance(block_end, block_size);
+        threads[i] = std::thread(accumulate_block<Iterator, T>(), block_start, block_end, std::ref(results[i]));
+        block_start = block_endl;
+    }
+
+    // the main thread also do work
+    accumulate_block<Iterator, T>()(block_start, last, results[num_threads-1]);
+
+    // harvest all threads and combine the results
+    for (auto& t: threads) {
+        t.join();
+    }
+    return std::accumulate(results.begin(), results.end(), init);
+}
+```
+
+---
+
+#### Identifying threads
