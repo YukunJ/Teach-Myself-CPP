@@ -35,6 +35,7 @@ Currently I am reading the comprehensive book [\<Design Data-Intensive Applicati
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
 - [**<C++ Concurrency in Action>**](./Concurrency-C++/C++_Concurrency_in_Action.pdf)
 	* [Thread Management](./Concurrency-C++/thread_management.md)
+	* [Sharing Data Between Threads](./Concurrency-C++/sharing_data_between_threads.md)
 - [**<Effective Modern C++>**](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)

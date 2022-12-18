@@ -407,3 +407,24 @@ T parallel_accumulate(Iterator first, Iterator last, T init) {
 ---
 
 #### Identifying threads
+
+Each thread has its own identifier of type `std::thread::id` and could be retrieved in two ways:
+
+1. Call the function `get_id()` on a `std::thread` object
+2. Call function `std::this_thread::get_id()` to get the id of the current running thread
+
+This class `std::thread::id` could be freely copied and compared. The STL provides it with a total ordering and it could also be used as key in associative container like `std::map`, `std::set`. The STL also provides `std::hash<std::thread::id>`, so it can also act as key in `std::unordered_map` and `std::unordered_set`.
+
+Sometimes, based on whether we are on the master thread, code could do different things:
+
+```CPP
+std::thread::id master_thread;
+
+void some_core_part_of_algorithm() {
+  if (std::this_thread::get_id() == master_thread) {
+    do_master_thread_work();
+  } else {
+    do_common_work();
+  }
+}
+```

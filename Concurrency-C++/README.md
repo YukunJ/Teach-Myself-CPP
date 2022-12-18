@@ -7,5 +7,4 @@ In this repo, we will go over most details of C++ language supports for concurre
 ### Contents
 
 1. [Thread Management](./thread_management.md)
-
-
+2. [Sharing Data Between Threads](sharing_data_between_threads.md)
