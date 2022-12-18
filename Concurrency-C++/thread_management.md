@@ -157,3 +157,74 @@ void edit_document(const std::string& filename) {
 ---
 
 #### Passing arguments to a thread function
+
+Passing arguments to the callable object for thread creation is as simple as supplying additional arguments to the constructor for `std::thread`. But it's important to recognize that by default, the arguments are copied into internal storage for the thread and then passed to the callable object or function as **rvalues** as if they were temporaries.
+
+Here is an example showing this:
+
+```CPP
+void f(int i, const std::string& s);
+
+void oops(int some_param) {
+  char buffer[1024];
+  sprintf(buffer, "%i", some_param);
+  std::thread t1(f, 3, buffer); // WRONG
+  std::thread t2(f, 3, std::string(buff)); // OK
+  t.detach();
+}
+```
+
+In this case, even if `f` is expecting a second parameter of type `std::string`, it is the `char * buffer` that's passed to the new thread and later on implicitly converted to `std::string`. Therefore, it's very likely that `oops()` function exits before such implicit conversion happens, leading to `buffer` points to invalid memory space.
+
+As we showed in the example, a safer way is to manually do the type conversion before the parameter gets passed into the thread storage space.
+
+A second point is that, it's not easy to get it correct first time when you try to pass in a reference to the new thread. For example, the following code will not be able to compile:
+
+```CPP
+// compile error
+void update_data_for_widget(widget_id id, widget_data& data);
+
+void oops_again(widget_id w) {
+  widget_data data;
+  std::thread t(update_data_for_widget, w, data);
+  t.join();
+}
+```
+
+Although the function `update_data_for_widget` is expecting a reference for its second parameter, the `std::thread`'s constructor doesn't know and care about it. The parameter `data` is copied and passed in, and then the internal code tries to pass this rvalue to `update_data_for_widget` and this causes compilation error because you cannot bind a rvalue to non-**const** reference parameter.
+
+The solution is to wrap the arguments in `std:ref` or `std::cref` for const reference-ness:
+
+```CPP
+std::thread t(update_data_for_widget, w, std::ref(data));
+```
+
+Not only normal functions can be passed to `std::thread`, class member functions are also candidates for this as long as we provide the "`this`" pointer it needs. For example,
+
+```CPP
+class X {
+public:
+  void do_work() {};
+};
+
+X my_x;
+
+// this new thread will execute function as if we call
+// my_x.do_work();
+std::thread t(&X::do_work, &my_x);
+```
+
+Some parameters can only be moved but not copied. In this case, we need explicitly to call `std::move` when supplying arguments for the thread constructor. `std::unique_ptr` is a classic example for this scenario.
+
+```CPP
+void process_object(std::unique_ptr<big_object>);
+std::unique_ptr<big_object> p(new big_object);
+p->prepare_data(42);
+std::thread t(process_object, std::move(p));
+```
+
+By specifying `std::move(p)`, the ownership of `p` is transferred into internal storage of the new thread and then into the function `process_object`.
+
+---
+
+#### Transferring ownership of a thread 
