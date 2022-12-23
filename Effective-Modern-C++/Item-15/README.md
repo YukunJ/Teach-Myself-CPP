@@ -1,4 +1,4 @@
-### Item 15: Use **constexpt** whenever possible
+### Item 15: Use **constexpr** whenever possible
 
 
 #### Overall

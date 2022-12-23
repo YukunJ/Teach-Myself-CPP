@@ -65,7 +65,7 @@ private:
   DataType values;
 };
 
-auto vals1 = w.date();		 // call lvalue overload, copy-construct vals1
+auto vals1 = w.data();		 // call lvalue overload, copy-construct vals1
 
 auto vals2 = makeWidget().data();// call rvalue overload, move-construct vals2
 ```
