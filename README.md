@@ -37,6 +37,7 @@ Currently I am reading the comprehensive book [\<Design Data-Intensive Applicati
 	* [Thread Management](./Concurrency-C++/thread_management.md)
 	* [Sharing Data Between Threads](./Concurrency-C++/sharing_data_between_threads.md)
     * [Synchronizing Concurrent Operations](./Concurrency-C++/synchronizing_concurrent_operations.md)
+	* [Memory Model and Operations on Atmoic Types](./Concurrency-C++/memory_model_and_operations_on_atomic_types.md)
 - [**<Effective Modern C++>**](./Effective-Modern-C++/Effective-Modern-CPP.pdf)
 	* Deducing Types
         * [Understand template type deduction](./Effective-Modern-C++/Item-01)

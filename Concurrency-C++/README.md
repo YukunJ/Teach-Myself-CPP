@@ -9,3 +9,4 @@ In this repo, we will go over most details of C++ language supports for concurre
 1. [Thread Management](./thread_management.md)
 2. [Sharing Data Between Threads](sharing_data_between_threads.md)
 3. [Synchronizing Concurrent Operations](synchronizing_concurrent_operations.md)
+4. [Memory Model and Operations on Atomic Types](memory_model_and_operations_on_atomic_types.md)
