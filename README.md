@@ -33,6 +33,8 @@ Currently I am reading the comprehensive book [\<Design Data-Intensive Applicati
 - [How to write Smart Pointers](./Smart_ptr)
     * [my **unique_ptr**](./Smart_ptr/README.md#unique_ptr)
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
+- C++ New Features Clarification
+	* [Variadic Template](./Modern-C++-features/varadic_template)
 - [**<C++ Concurrency in Action>**](./Concurrency-C++/C++_Concurrency_in_Action.pdf)
 	* [Thread Management](./Concurrency-C++/thread_management.md)
 	* [Sharing Data Between Threads](./Concurrency-C++/sharing_data_between_threads.md)
