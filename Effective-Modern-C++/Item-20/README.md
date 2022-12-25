@@ -61,7 +61,7 @@ Suppose there is a use case that **A** holds a **std::shared_ptr** of **B**, but
 
 ![avatar](./cycle.png)
 
-**raw pointer** is a bad choice because if **A** is destroyed, C may inadvertently dereference the dangling pointer.
+**raw pointer** is a bad choice because if **A** is destroyed, B may inadvertently dereference the dangling pointer.
 
 **std::shared_ptr** is also a bad choice, because if **A** goes out of scope, it cannot be destroyed because **B** is still keeping a reference count for it.
 
