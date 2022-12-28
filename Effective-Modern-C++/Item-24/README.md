@@ -18,7 +18,7 @@ template<typename T>
 void f(std::vector<T>&& param);	// rvalue reference
 
 template<typename T>
-void f(T&& param);		// not value reference
+void f(T&& param);		// not rvalue reference
 ```
 
 In fact, "**T&&**" has two different meanings. One is the common rvalue we expect to see. Another is what's called *universal reference*, which can behave like either lvalue or rvalue.

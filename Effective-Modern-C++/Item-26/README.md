@@ -57,7 +57,7 @@ short nameIdx = 4;
 logAndAdd(nameIdx);	// error!
 ```
 
-There are two versions of `logAndAdd` overloads. The one taking a universal reference can deduce **T** to be **short&**, thus yielding exact match. This is deemed better than casting **short** to **int**. And then we all know the rest of the strong: there is no constructor for **std::string** that could take a short as paramter. So the code fails.
+There are two versions of `logAndAdd` overloads. The one taking a universal reference can deduce **T** to be **short&**, thus yielding exact match. This is deemed better than casting **short** to **int**. And then we all know the rest of the story: there is no constructor for **std::string** that could take a short as paramter. So the code fails.
 
 Let's look at another failing example:
 
