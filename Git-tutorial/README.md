@@ -405,6 +405,18 @@ d4bf700 (HEAD -> master) Update: README.md (beautiful)
 
 We cam see the previous typo-commit is replaced by our newly-amended one.
 
+14. Stash
+
+There are situations where we have to work on some features urgently, but we don't want to just delete all the changes we are working at hand. `git stash` command saves the previously written code and then goes back to the last commit for a fresh start.
+
+By default, `git stash` saves the modifications on tracked files and reverts the working directory to match the **HEAD** commit. and we can provide a message when creating stash by `git stash save "some message"`.
+
+We can create multiple stashes and view them by `git stash list`. Each stash is given an identifier as `stash@{a number}`. and `git stash show` will display the summary of operations done on a particular stash.
+
+We can get back the previously stashed changed by `git stash {pop, apply}`. The difference is that `git stash pop` will remove the changes from stash, while `git stash apply` retains the stash. Both will reapply the stashed modification into the working copy.
+
+We can create and checkout a new branch starting from the commit where a stash is made by `git stash branch new_branch_name previous_stash_name`. `git stash drop stash_name` will delete any particular stash, and `git stash clear` delete all existing stashes all at once. 
+
 ---
 
 ### Git Remote
