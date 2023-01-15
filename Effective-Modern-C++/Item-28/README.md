@@ -40,7 +40,7 @@ T&& forward(remove_reference_t<T>& param) {
 }
 ```
 
-Suppose we pass an lvaue of `Widget` to **f**. **T** is thus deduced to be `Widget&`. Steps are substitution, remove reference traits, and then collapsing:
+Suppose we pass an lvalue of `Widget` to **f**. **T** is thus deduced to be `Widget&`. Steps are substitution, remove reference traits, and then collapsing:
 
 ```CPP
 Widget& && forward(Widget& param) {
