@@ -16,8 +16,11 @@ I finished reading on
 
 + [\<Effective Modern C++\>](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/)
 
-Currently I am reading the comprehensive book [\<Design Data-Intensive Application\>](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/) to gain the bigger idea on modern large-scale distributed data system in the Industry.
++ [\<C++ Concurrency in Action\>](https://www.manning.com/books/c-plus-plus-concurrency-in-action)
 
++ [\<Design Data-Intensive Application\>](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
+
+Currently I am reading the comprehensive book [\<C++ Software Design: Design Principles and Patterns for High-Quality Software\>](https://www.oreilly.com/library/view/c-software-design/9781098113155/) to learn some design principles and best practices.
 
 ## Content
 
