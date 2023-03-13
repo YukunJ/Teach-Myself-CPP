@@ -91,3 +91,6 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Be aware of varying thread handle destructor behavior](./Effective-Modern-C++/Item-38)
 		* [Consider **void** futures for one-shot event communication](./Effective-Modern-C++/Item-39)
 		* [Use **std::atomic** for concurrency, **volatile** for special memory](./Effective-Modern-C++/Item-40)
+- [**<C++ Software Design Principles>**](https://www.oreilly.com/library/view/c-software-design/9781098113155/)
+	* [Understand the Importance of Software Design](./C++-software-design/item1.md)
+	* [Design for Change](./C++-software-design/item2.md)
