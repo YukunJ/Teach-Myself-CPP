@@ -96,4 +96,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Design for Change](./C++-software-design/item2.md)
 	* [Separate Interfaces to Avoid Artificial Coupling](./C++-software-design/item3.md)
 	* [Design for Testability](./C++-software-design/item4.md)
-	* [Design for Extension](./C++-software-design/item5.md))
+	* [Design for Extension](./C++-software-design/item5.md)
+	* [Adhere to the Expected Behavior of Abstractions](./C++-software-design/item6.md)
