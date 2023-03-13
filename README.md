@@ -94,3 +94,6 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 - [**<C++ Software Design Principles>**](https://www.oreilly.com/library/view/c-software-design/9781098113155/)
 	* [Understand the Importance of Software Design](./C++-software-design/item1.md)
 	* [Design for Change](./C++-software-design/item2.md)
+	* [Separate Interfaces to Avoid Artificial Coupling](./C++-software-design/item3.md)
+	* [Design for Testability](./C++-software-design/item4.md)
+	* [Design for Extension](./C++-software-design/item5.md))
