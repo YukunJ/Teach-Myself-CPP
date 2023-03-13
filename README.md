@@ -98,3 +98,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Design for Testability](./C++-software-design/item4.md)
 	* [Design for Extension](./C++-software-design/item5.md)
 	* [Adhere to the Expected Behavior of Abstractions](./C++-software-design/item6.md)
+	* [Understand the Similarities Between Base Classes and Concepts](./C++-software-design/item7.md)
+	* [Understand the Semantic Requirements of Overload Sets](./C++-software-design/item8.md)
