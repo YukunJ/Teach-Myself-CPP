@@ -106,3 +106,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Beware of Design Pattern Misconceptions](./C++-software-design/item12.md)
 	* [Design Patterns Are Everywhere](./C++-software-design/item13.md)
 	* [Use a Design Pattern's Name to communicate Intent](./C++-software-design/item14.md)
+	* [Design for the Addition of Types of Operations](./C++-software-design/item15.md)
+    * [Use Visitor to Extend Operations.](./C++-software-design/item16.md)
