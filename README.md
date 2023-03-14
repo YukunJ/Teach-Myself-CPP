@@ -100,3 +100,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Adhere to the Expected Behavior of Abstractions](./C++-software-design/item6.md)
 	* [Understand the Similarities Between Base Classes and Concepts](./C++-software-design/item7.md)
 	* [Understand the Semantic Requirements of Overload Sets](./C++-software-design/item8.md)
+	* [Pay Attention to the Ownership of Abstractions](./C++-software-design/item9.md)
+	* [Consider Creating an Architectural Document](./C++-software-design/item10.md)
