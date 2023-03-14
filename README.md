@@ -105,3 +105,4 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Understand the Purpose of Design Patterns](./C++-software-design/item11.md)
 	* [Beware of Design Pattern Misconceptions](./C++-software-design/item12.md)
 	* [Design Patterns Are Everywhere](./C++-software-design/item13.md)
+	* [Use a Design Pattern's Name to communicate Intent](./C++-software-design/item14.md)
