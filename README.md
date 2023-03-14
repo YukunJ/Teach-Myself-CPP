@@ -104,3 +104,4 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Consider Creating an Architectural Document](./C++-software-design/item10.md)
 	* [Understand the Purpose of Design Patterns](./C++-software-design/item11.md)
 	* [Beware of Design Pattern Misconceptions](./C++-software-design/item12.md)
+	* [Design Patterns Are Everywhere](./C++-software-design/item13.md)
