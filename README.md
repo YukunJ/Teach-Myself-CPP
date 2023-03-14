@@ -102,3 +102,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 	* [Understand the Semantic Requirements of Overload Sets](./C++-software-design/item8.md)
 	* [Pay Attention to the Ownership of Abstractions](./C++-software-design/item9.md)
 	* [Consider Creating an Architectural Document](./C++-software-design/item10.md)
+	* [Understand the Purpose of Design Patterns](./C++-software-design/item11.md)
+	* [Beware of Design Pattern Misconceptions](./C++-software-design/item12.md)
