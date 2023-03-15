@@ -115,3 +115,5 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Consider std::variant for Implementing Visitor](./C++-software-design/item17.md)
 		* [Beware the Performance of Acyclic Visitor](./C++-software-design/item18.md)
 	* The Strategy and Command Design Patterns
+		* [Use Strategy to Isolate How Things Are Done](./C++-software-design/item19.md)
+		* [Favor Composition over Inheritance](./C++-software-design/item201.md)
