@@ -122,3 +122,8 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Prefer a Value-Based Implementation of Strategy and Command](./C++-software-design/item23.md)
 	* The Adapter, Observer, and CRTP Design Patterns
 		* [Use Adapters to Standardize Interfaces](./C++-software-design/item24.md)
+		* [Apply Observers as an Abstract Notification Mechanism](./C++-software-design/item25.md)
+		* [Use CRTP to Introduce Static Type Categories](./C++-software-design/item26.md)
+		* [Use CRTP for Static Mixin Classes](./C++-software-design/item27.md)
+	* The Bridge, Prototype, and External Polymorphism Design Patterns
+	
