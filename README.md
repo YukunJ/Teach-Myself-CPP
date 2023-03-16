@@ -121,3 +121,4 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Prefer Value Semantics over Reference Semantics](./C++-software-design/item22.md)
 		* [Prefer a Value-Based Implementation of Strategy and Command](./C++-software-design/item23.md)
 	* The Adapter, Observer, and CRTP Design Patterns
+		* [Use Adapters to Standardize Interfaces](./C++-software-design/item24.md)
