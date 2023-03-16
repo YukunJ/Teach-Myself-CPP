@@ -116,4 +116,8 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Beware the Performance of Acyclic Visitor](./C++-software-design/item18.md)
 	* The Strategy and Command Design Patterns
 		* [Use Strategy to Isolate How Things Are Done](./C++-software-design/item19.md)
-		* [Favor Composition over Inheritance](./C++-software-design/item201.md)
+		* [Favor Composition over Inheritance](./C++-software-design/item20.md)
+		* [Use Command to Isolate What Things Are Done](./C++-software-design/item21.md)
+		* [Prefer Value Semantics over Reference Semantics](./C++-software-design/item22.md)
+		* [Prefer a Value-Based Implementation of Strategy and Command](./C++-software-design/item23.md)
+	* The Adapter, Observer, and CRTP Design Patterns
