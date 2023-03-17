@@ -126,4 +126,8 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Use CRTP to Introduce Static Type Categories](./C++-software-design/item26.md)
 		* [Use CRTP for Static Mixin Classes](./C++-software-design/item27.md)
 	* The Bridge, Prototype, and External Polymorphism Design Patterns
-	
+		* [Build Bridges to Remove Physical Dependencies](./C++-software-design/item28.md)
+		* [Be Aware of Bridge Performance Gains and Losses](./C++-software-design/item29.md)
+		* [Apply Prototype for Abstract Copy Operations](./C++-software-design/item30.md)
+		* [Use External Polymorphism for Nonintrusive Runtime Polymorphism](./C++-software-design/item31.md)
+	* The Type Erasure Design Pattern
