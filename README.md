@@ -131,3 +131,4 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Apply Prototype for Abstract Copy Operations](./C++-software-design/item30.md)
 		* [Use External Polymorphism for Nonintrusive Runtime Polymorphism](./C++-software-design/item31.md)
 	* The Type Erasure Design Pattern
+		* [Consider Replacing Inheritance Hierarchies with Type Erasure](./C++-software-design/item32.md)
