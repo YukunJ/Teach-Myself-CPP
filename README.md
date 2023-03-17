@@ -132,3 +132,6 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Use External Polymorphism for Nonintrusive Runtime Polymorphism](./C++-software-design/item31.md)
 	* The Type Erasure Design Pattern
 		* [Consider Replacing Inheritance Hierarchies with Type Erasure](./C++-software-design/item32.md)
+		* [Be Aware of the Optimization Potential of Type Erasure](./C++-software-design/item33.md)
+		* [Be Aware of the Setup Costs of Owning Type Erasure Wrappers](./C++-software-design/item34.md)
+	* The Decorator Design Pattern
