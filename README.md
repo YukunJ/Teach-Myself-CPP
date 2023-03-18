@@ -135,3 +135,6 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Be Aware of the Optimization Potential of Type Erasure](./C++-software-design/item33.md)
 		* [Be Aware of the Setup Costs of Owning Type Erasure Wrappers](./C++-software-design/item34.md)
 	* The Decorator Design Pattern
+		* [Use Decorators to Add Customization Hierarchically](./C++-software-design/item35.md)
+		* [Understand the Trade-off Between Runtime and Compile Time Abstraction](./C++-software-design/item36.md)	
+	* The Singleton Pattern
