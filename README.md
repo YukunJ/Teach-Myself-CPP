@@ -139,3 +139,4 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 		* [Understand the Trade-off Between Runtime and Compile Time Abstraction](./C++-software-design/item36.md)	
 	* The Singleton Pattern
 		* [Treat Singleton as Implementation Pattern, Not a Design Pattern](./C++-software-design/item37.md)	
+		* [Design Singletons for Change and Testability](./C++-software-design/item38.md)	
