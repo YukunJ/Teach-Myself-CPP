@@ -30,7 +30,7 @@ Currently I am reading the comprehensive book [\<C++ Software Design: Design Pri
 - [Makefile tutorial](./Makefile-tutorial)
 - [Socket Programming tutorial](./Socket-Programming)
 - [How to intergate with **GoogleTest** using CMake](./CMake-googletest-tutorial)
-- [How to use Google's **Protocol Buffer**](./Protocol-bufferß)
+- [How to use Google's **Protocol Buffer**](./Protocol-buffer)
 - [How to write a Reader-Writer lock](./ReaderWriter-lock)
 - [How to design a Key-Value store using **SkipList**](./KV-store-skiplist)
 - [How to design a multi-user chatroom using **Socket Programming**](https://github.com/YukunJ/TurtleChat)
