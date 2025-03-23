@@ -59,3 +59,16 @@ ASSERT_EQ(0x04, static_cast<int>(dst[3]));
 For `variable-length` mode, it use 7 bits in each byte to encode the real data, and the most significant bit (8th bit) in the byte to indicate if more data is upcoming in the next byte. The benefits of this encoding mode is that it saves a lot of space for small value encoding in a large type. The worst case is that it would use 5 bytes for `int32` and 10 bytes for `int64`. 
 
 Let's take a very simple example, we want to encode a int64 of value `0b 10101010`. We take a first 7 least-significant bits `0101010` and set up the 8th bit since we have 1 more bit unencoded. and the remaining bit `1` we will encoding it in the next byte, witht the 8th bit of that byte unset to indicate the end of encoding. So eventually we only use 2 bytes to encode this `int64`: `(first byte) 1010 1010 (second byte) 0000 0001`
+
+#### Arena
+
+`Arena` is the internal memory pool for leveldb. It's non-copyable. It keeps tracking of blocks of size `4096` or more, and releases them upon destruction. 
+
+The main APIs are `char* Allocate(size_t bytes)` and `char* AllocateAligned(size_t bytes)`, the latter of which provides memory allocated with same alignment as `void *` (8 bytes typically). 
+
+For `Allocate`, when the requesting bytes are smaller than the remaining bytes in the current block `alloc_ptr_`, it will return `alloc_ptr_` and increment its position by the requesting bytes. If the requesting bytes are more than the remaining bytes, it breaks down into 2 cases:
+
+1. When requesting more than `4096/4=1024` bytes, Arena will directly allocate exact requesting byte block and return to caller.
+2. Otherwise, Arena will give up the remaining space in the current block, allocate a new block of `4096` and allocates the requesting bytes from this new block back to the caller, and keep track of this new block in `alloc_ptr_`.
+
+For `AllocateAligned` it is essentially the same operation, plus little adjustment to ensure the returning address is properly aligned with `align = (sizeof(void*) > 8) ? sizeof(void*) : 8;`
