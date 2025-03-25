@@ -72,3 +72,43 @@ For `Allocate`, when the requesting bytes are smaller than the remaining bytes i
 2. Otherwise, Arena will give up the remaining space in the current block, allocate a new block of `4096` and allocates the requesting bytes from this new block back to the caller, and keep track of this new block in `alloc_ptr_`.
 
 For `AllocateAligned` it is essentially the same operation, plus little adjustment to ensure the returning address is properly aligned with `align = (sizeof(void*) > 8) ? sizeof(void*) : 8;`
+
+#### Cache
+
+leveldb provides a builtin LRUCache implementing the `Cache.h` interface. 
+
+##### HandleTable
+
+leveldb folks handcrafted a simple hashtable storing the `LRUHandle *`. In essence, it is a list of buckets, each bucket is a chaining linked list.
+
+`LRUHandle** list_` points to a list `length_` of buckets chaining the `LURHandle*`. It aims to keep a low average linked list length <= 1 by ensuring there are as many bucket as number of entries in the hashtable. 
+
+For accessing, it breaks into 2 steps. (1) Find the bucket of chain. (2) Iterate through the chain. We can look an example:
+
+```cpp
+LRUHandle** FindPointer(const Slice& key, uint32_t hash) {
+  LRUHandle** ptr = &list_[hash & (length_ - 1)];
+  while (*ptr != nullptr && ((*ptr)->hash != hash || key != (*ptr)->key())) {
+    ptr = &(*ptr)->next_hash;
+  }
+  return ptr;
+}
+```
+
+The `hash & (length_ -1)` finds which bucket it is going to. And then it follows the hash chain to iterate through, either find the target `key` or reach the end.
+
+The fact that `FindPointer` gives back `LRUHandle **` is handy. Take the `Remove` function for example:
+
+```cpp
+LRUHandle* Remove(const Slice& key, uint32_t hash) {
+  LRUHandle** ptr = FindPointer(key, hash);
+  LRUHandle* result = *ptr;
+  if (result != nullptr) {
+    *ptr = result->next_hash;
+    --elems_;
+  }
+  return result;
+}
+```
+
+We know there might be some other `LRUHandle *` whose `->next_hash` points to `*ptr`. By modifying in-place `*ptr = result->next_hash`, whoever points to the to-be-removed LRUHandle as their `next_hash` will have the correct `result->next_hash` value. Think of this as a left-shift by 1 position in an array.
