@@ -120,3 +120,7 @@ This is the single shard base class of the final built-in LURCache that leveldb 
 It internally keeps 2 doubly-linked list `lru_` and `in_use_`, which are mutually exclusive. What's in `in_use_` means some clients currently hold reference to that `Cache::Handle*`, and the entries in that list `in_use_` does not have a particular order. What's in `lru_` is sorted by least-recent-used priority that is not currently used by client. The minimal reference count to keep is 1 in `lru_` and `>1` to be in `in_use_`.
 
 The logic here is, when client `Lookup` and get a `Cache::Handle*`, it will be moved to the `in_use_` list if not already there. When they are done with that cache entry and call `Release`, the reference count will drop by 1. When it reaches `1`, which means there is no client referencing this entries except for the Cache object, it will be moved from `in_use_` back to the `lru_`'s head, indicating it is the most recently accessed cache entry. After client insert a new cache entry, it will perform cache evicting base on the LRU policy.
+
+##### ShardedLRUCache
+
+This is the final version of the leveldb built-in LRU cache. Basically it maintains an arry of 16 `LRUCache` we discussed above in an effort to further balance-split the traffic.  Upon an `Insert` or `Lookup`, it will first hash the key and bitwise `&` operation the last 4 bits to pick the corresponding single `LRUCache` instance and pass along the operations.
