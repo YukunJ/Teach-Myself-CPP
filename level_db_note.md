@@ -112,3 +112,11 @@ LRUHandle* Remove(const Slice& key, uint32_t hash) {
 ```
 
 We know there might be some other `LRUHandle *` whose `->next_hash` points to `*ptr`. By modifying in-place `*ptr = result->next_hash`, whoever points to the to-be-removed LRUHandle as their `next_hash` will have the correct `result->next_hash` value. Think of this as a left-shift by 1 position in an array.
+
+##### LRUCache
+
+This is the single shard base class of the final built-in LURCache that leveldb folks provide. The public key APIs are `Lookup`, `Release`, `Erase` and `Prune`.
+
+It internally keeps 2 doubly-linked list `lru_` and `in_use_`, which are mutually exclusive. What's in `in_use_` means some clients currently hold reference to that `Cache::Handle*`, and the entries in that list `in_use_` does not have a particular order. What's in `lru_` is sorted by least-recent-used priority that is not currently used by client. The minimal reference count to keep is 1 in `lru_` and `>1` to be in `in_use_`.
+
+The logic here is, when client `Lookup` and get a `Cache::Handle*`, it will be moved to the `in_use_` list if not already there. When they are done with that cache entry and call `Release`, the reference count will drop by 1. When it reaches `1`, which means there is no client referencing this entries except for the Cache object, it will be moved from `in_use_` back to the `lru_`'s head, indicating it is the most recently accessed cache entry. After client insert a new cache entry, it will perform cache evicting base on the LRU policy.
