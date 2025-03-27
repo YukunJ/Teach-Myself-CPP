@@ -124,3 +124,20 @@ The logic here is, when client `Lookup` and get a `Cache::Handle*`, it will be m
 ##### ShardedLRUCache
 
 This is the final version of the leveldb built-in LRU cache. Basically it maintains an arry of 16 `LRUCache` we discussed above in an effort to further balance-split the traffic.  Upon an `Insert` or `Lookup`, it will first hash the key and bitwise `&` operation the last 4 bits to pick the corresponding single `LRUCache` instance and pass along the operations.
+
+#### Comparator
+
+`Comparator` interface is used to compare and give ordering between 2 `Slice`s in leveldb. There is one built-in `BytewiseComparator` that already implements this interface. 
+
+There are 2 interesting APIs from the `Comparator` interface. `FindShortestSeparator(std::string* start, const Slice& limit)` which aims to change `start` to a middle value sitting in between `[start, limit)` if `start` is smaller than `limit`. `FindShortSuccessor(std::string *key)` changes `key` to be a short string that's greater than or equal to `*key`.
+
+For the `BytewiseComparator` it will find the common prefix and increment the next byte by 1 to find the shortest separator (assume `*start > limit`) and increment the first byte that could be incremented (the byte not equal to `0xff`).
+
+Notice the usage of singleton pattern and `NoDestructor` trait in initializing the `Bytewise Comparator`. We will talk about that next.
+
+```cpp
+const Comparator* BytewiseComparator() {
+  static NoDestructor<BytewiseComparatorImpl> singleton;
+  return singleton.get();
+}
+```
