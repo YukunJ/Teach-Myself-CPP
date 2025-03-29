@@ -141,3 +141,14 @@ const Comparator* BytewiseComparator() {
   return singleton.get();
 }
 ```
+
+#### NoDestructor
+
+`NoDestructor` is a template class leveldb defines to wrap an instance whose destructor would never be called. It leverages several advanced C++ features, including
+
++ use perfect forwarding for variadic parameter passing to the instance's constructor
++ in-place `new` operator to create the instance into this `NoDestructor`'s private variable space `instance_storage_t`
++ guarantee this space is of the same alignment as the to-be-created instance type and is large enough to hold the instance
+
+A good question to ask is: OK. So why these wrapped instances should not be destructed? One key point is, **the destruction order of static local variables across different compilaiton units are not guaranteed in C++**. If there are dependencies between different static variables and the destruction order is incorrect, it may lead to undefined behavior.
+
