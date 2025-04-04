@@ -152,3 +152,10 @@ const Comparator* BytewiseComparator() {
 
 A good question to ask is: OK. So why these wrapped instances should not be destructed? One key point is, **the destruction order of static local variables across different compilaiton units are not guaranteed in C++**. If there are dependencies between different static variables and the destruction order is incorrect, it may lead to undefined behavior.
 
+#### Histogram
+
+`Histogram` is the quick histogram class that leveldb implements for measurement and benchmark purpose. Usually you cannot afford to record every single data point to be able to compute the percentile. An approximation is to bucket it.
+
+Here `Histogram` has `154` buckets ranging from `1` to `1e200`. When inserting a number into the histogram, it find the first bucket `k` such that `kBucketLimit[k] > value` and then do a `bucket[k]++`. Basically it rounds this `value` to be `kBucketLimit[k]`.
+
+When querying a percentile, it simply finds 2 buckets that sandwich the target percentile, and do a linear interpolation in between.
