@@ -20,11 +20,14 @@ I finished reading on
 
 + [\<Design Data-Intensive Application\>](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
 
-Currently I am reading the comprehensive book [\<C++ Software Design: Design Principles and Patterns for High-Quality Software\>](https://www.oreilly.com/library/view/c-software-design/9781098113155/) to learn some design principles and best practices.
++ [\<C++ Software Design: Design Principles and Patterns for High-Quality Software\>](https://www.oreilly.com/library/view/c-software-design/9781098113155/)
+
+Recently I've been reading over Google's leveldb source code and being thinking to write some low-level stuff to sharpen my C++ skills.
 
 ## Content
 
 - [Google C++ Style Guidance](https://google.github.io/styleguide/cppguide.html)
+- [Google leveldb read notes](./level_db_note.md)
 - [Git tutorial](./Git-tutorial)
 - [Gdb tutorial](./Gdb-tutorial)
 - [Makefile tutorial](./Makefile-tutorial)
