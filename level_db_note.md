@@ -165,3 +165,9 @@ When querying a percentile, it simply finds 2 buckets that sandwich the target p
 `Status` encapsulates the result of an operation in leveldb. It could either be OK, or a type of error with a customizable message. The possible codes include `kOK`, `kNotFound`, `kCorruption`, `kNotSupported`, `kInvalidArgument` and `kIOError`. 
 
 The design to support customized message while being resource-efficient is via its `status_` char array. When the status is `kOk`, the `status_` is `nullptr`. Otherwise, it is of the format that `status[0..3]` 4 bytes to represent the message length. `status_[4]` is the error code. and `status_[5..]` is the customized error message.
+
+#### Posix Env
+
+The `env_posix.cc` implements the `env.h` interface that provides a bunch of file operations and `FileLock`, `Logger`, `RandomAccessFile`, `SequentialFile` and `WriteableFile` abstractions in POSIX environment.
+
+The `Limiter` limits the resouce usage on readonly and mmap file. It is thread-safe.
