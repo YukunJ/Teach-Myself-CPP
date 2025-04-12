@@ -171,3 +171,26 @@ The design to support customized message while being resource-efficient is via i
 The `env_posix.cc` implements the `env.h` interface that provides a bunch of file operations and `FileLock`, `Logger`, `RandomAccessFile`, `SequentialFile` and `WriteableFile` abstractions in POSIX environment.
 
 The `Limiter` limits the resouce usage on readonly and mmap file. It is thread-safe.
+
+#### SkipList
+
+`skiplist.h` implements one of the core data structures in leveldb -- SkipList. For a detailed illustration of what is a skiplist, we can refer to my old article on [How to design a Key-Value store using **SkipList**](https://github.com/YukunJ/Teach-Myself-CPP/blob/main/KV-store-skiplist/README.md) or another awesome blog [https://selfboot.cn/en/2024/09/09/leveldb_source_skiplist/#Principles-of-Skip-Lists)
+
+One striking feature is the variable-length array `next_` within a fixed struct definition `Node`, leveraging manual memory allocation to accommodate the actual required size. The `next_` variable keeps the next node's link at different levels, with `next_[0]` being the lowest level link. It's to handle the problem that `max_length` might increase as the skiplist grows and therefore it's hard to define a static fixed size of this `next_` array.
+
+
+```cpp
+// declaration
+ private:
+  // Array of length equal to the node height.  next_[0] is lowest level link.
+  std::atomic<Node*> next_[1];
+
+// allocation
+template <typename Key, class Comparator>
+typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::NewNode(
+    const Key& key, int height) {
+  char* const node_memory = arena_->AllocateAligned(
+      sizeof(Node) + sizeof(std::atomic<Node*>) * (height - 1));
+  return new (node_memory) Node(key);
+}
+```
