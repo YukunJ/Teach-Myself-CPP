@@ -195,10 +195,12 @@ typename SkipList<Key, Comparator>::Node* SkipList<Key, Comparator>::NewNode(
 }
 ```
 
-### LogWriter
+### LogWriter & LogReader
 
 In the `log_writer.cc` it implements the writer class that emits each operation record to a backup physical file. It has a few interesting points:
 
 + Each block written is at most **32768** bytes long, so a record does not necessarily fit into a block
 + Therefore each record has a corresponding type: `kFullType`, `kFirstType`, `kLastType` and `kMiddleType`. As the name indicates, `kFullType` means this record fully fit in this block. `kFirstType` means more to come. `kLastType` means this is the last piece for this record. `kMiddleType` means it is in the middle of the current writing record.
 + Each written record has a 7 byte header occupied by 4 bytes of CRC checksum and 2 bytes of record length and 1 byte of the record type.
+
+The `log_reader.cc` basically does the inverse of what the writer does. It reads back the bytes from the log file from disk and reassembly them into a record. It takes into considerations that, based on the record type, a record might break into multiple block of log files on disk.
