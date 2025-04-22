@@ -204,3 +204,25 @@ In the `log_writer.cc` it implements the writer class that emits each operation 
 + Each written record has a 7 byte header occupied by 4 bytes of CRC checksum and 2 bytes of record length and 1 byte of the record type.
 
 The `log_reader.cc` basically does the inverse of what the writer does. It reads back the bytes from the log file from disk and reassembly them into a record. It takes into considerations that, based on the record type, a record might break into multiple block of log files on disk.
+
+
+### MemTable
+
+`MemTable` is leveldb's in-memory log table. It uses the `SkipList` we described earlier as its core backbone data structure. It's very simple in the interface design, just `Add` and `Get` method.
+
+The key is designed to be of the following format
+
+```cpp
+// Format of an entry is concatenation of:
+//  key_size     : varint32 of internal_key.size()
+//  key bytes    : char[internal_key.size()]
+//  tag          : uint64((sequence << 8) | type)
+//  value_size   : varint32 of value.size()
+//  value bytes  : char[value.size()]
+```
+
+When calling `Add`, it will encode the key, value, tag and seqnum together into 1 single big key into the skiplist. 
+
+When calling `Get`, it decodes out the 5 parts accordingly. If the key exists in the table, it returns `True` and store the value back to user via `std::string* value`. If the key is explicitly deleted (tag `kTypeDeletion`), it will return `True` and set status to be `NotFound`. Otherwise it returns `False`.
+
+One point to mention is that, recall the `SkipList` does not allow insertion of duplicate entries. The sequence number here in the `MemTable` plays a crucial role in ensuring the big insertion key will not be the same, even if the internal key is the same. The sequence number also helps to find the "latest entries" of an associated key, even if there is multiple entries for the same key. (It will pick the one with latest seqnum by the Iterator's `Seek` method)
