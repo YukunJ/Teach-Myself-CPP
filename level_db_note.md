@@ -226,3 +226,24 @@ When calling `Add`, it will encode the key, value, tag and seqnum together into 
 When calling `Get`, it decodes out the 5 parts accordingly. If the key exists in the table, it returns `True` and store the value back to user via `std::string* value`. If the key is explicitly deleted (tag `kTypeDeletion`), it will return `True` and set status to be `NotFound`. Otherwise it returns `False`.
 
 One point to mention is that, recall the `SkipList` does not allow insertion of duplicate entries. The sequence number here in the `MemTable` plays a crucial role in ensuring the big insertion key will not be the same, even if the internal key is the same. The sequence number also helps to find the "latest entries" of an associated key, even if there is multiple entries for the same key. (It will pick the one with latest seqnum by the Iterator's `Seek` method)
+
+### WriteBatch
+
+`WriteBatch` is leveldb's way for coalescing multiple operations into 1 single unit and later commit into DB atomically. It could save a lot cost on the I/O operation time.
+
+The internal design is that it keeps all the operations in order in a string `rep_`, which is of the format
+
+```bash
+| 8 byte seqnum | 4 byte count | N of operations |
+```
+
+and each operation is of format either
+```bash
+| [type value] key value | 
+```
+or
+```bash
+| [type delete] key |
+```
+
+There is also a helper class `WriteBatchInternal` that encapsulate a few internal operations that shouldn't be exposed to public interface of `WriteBatch`.
