@@ -38,6 +38,7 @@ Recently I've been reading over Google's leveldb source code and being thinking 
 - [How to design a Key-Value store using **SkipList**](./KV-store-skiplist)
 - [How to design a multi-user chatroom using **Socket Programming**](https://github.com/YukunJ/TurtleChat)
 - [How does **Webbench-1.5** work - source code annotation](https://github.com/YukunJ/annotated-webbench-1.5)
+- [How to write a SPMC shared-memory queue for IPC](./Shared-memory-queue)
 - [How to write Smart Pointers](./Smart_ptr)
     * [my **unique_ptr**](./Smart_ptr/README.md#unique_ptr)
     * [my **shared_ptr**](./Smart_ptr/README.md#shared_ptr)
