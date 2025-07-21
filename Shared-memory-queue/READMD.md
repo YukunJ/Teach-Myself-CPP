@@ -48,3 +48,7 @@ Received message from producer: Hello from spmc_queue producer!
 destroying spmc_queue /spmc_test_queue of mode reader
 spmc_queue destroyed
 ```
+
++ Day 3
+
+We add the support to allow the data buffer to wrap around as a ring buffer. Since both the writer and reader will need to know each other's index to decide if they could enqueue/dequeue, the indexes need to be thread-safe. we use the C11 `<stdatmoic.h>` atomic operations, which are cheaper than mutex.
