@@ -15,4 +15,4 @@ benchmark: benchmark.c spmc_queue.c
 
 .PHONY: clean
 clean:
-	rm -f producer consumer *.o *.s
+	rm -f benchmark producer consumer *.o *.s

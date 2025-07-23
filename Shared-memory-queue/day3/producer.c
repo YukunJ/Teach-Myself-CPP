@@ -1,9 +1,9 @@
 #define _POSIX_C_SOURCE 200809L
+#include "spmc_queue.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "spmc_queue.h"
 
 int main(void) {
   unsigned char buf[100];

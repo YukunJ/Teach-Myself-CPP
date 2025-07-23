@@ -52,3 +52,29 @@ spmc_queue destroyed
 + Day 3
 
 We add the support to allow the data buffer to wrap around as a ring buffer. Since both the writer and reader will need to know each other's index to decide if they could enqueue/dequeue, the indexes need to be thread-safe. we use the C11 `<stdatmoic.h>` atomic operations, which are cheaper than mutex.
+
+And also we add a basic performance testing benchmark for future calibration. Currently the code we had is performing at `923.601 MB/s` throughput.
+
+```shell
+$ ./benchmark 
+Initializing the performance benchmark...
+creating spmc_queue /spmc_benchmark_queue of size 64 and capacity 1024 with mode writer
+spmc_queue created
+creating spmc_queue /spmc_benchmark_queue of size 64 and capacity 1024 with mode reader
+spmc_queue created
+Initialized performance benchmark
+waiting for the producer & consumer thread to be ready...
+producer thread spawns
+consumer thread spawns
+performance benchmark starts
+performance benchmark ends
+Elapsed time: 1.109 seconds
+Throughput: 923.601 MB/s
+test_producer_sum = 33563254 and test_consumer_sum = 33563254
+Destroying the performance benchmark...
+destroying spmc_queue /spmc_benchmark_queue of mode writer
+spmc_queue destroyed
+destroying spmc_queue /spmc_benchmark_queue of mode reader
+spmc_queue destroyed
+Destroyed performance benchmark
+```
