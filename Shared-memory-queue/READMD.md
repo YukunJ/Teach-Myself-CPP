@@ -64,13 +64,44 @@ creating spmc_queue /spmc_benchmark_queue of size 64 and capacity 1024 with mode
 spmc_queue created
 Initialized performance benchmark
 waiting for the producer & consumer thread to be ready...
+consumer thread spawns
+producer thread spawns
+performance benchmark starts
+performance benchmark ends
+Elapsed time: 5.103 seconds
+Throughput: 802.662 MB/s
+test_producer_sum = 134246282 and test_consumer_sum = 134246282
+Destroying the performance benchmark...
+destroying spmc_queue /spmc_benchmark_queue of mode writer
+spmc_queue destroyed
+destroying spmc_queue /spmc_benchmark_queue of mode reader
+spmc_queue destroyed
+Destroyed performance benchmark
+```
+
++ Day 4
+
+We get a bit more sophisicated here. A few low-level system optimizations:
+
++ For the atomic variable, writer only need relaxed memory order w.r.t loading its own index, only need to do release memory order when updating its own index. similarly apply to reader.
++ Properly align the frequently-updated shared index variable and data field to be cache-line aligned
+
+```shell
+$ ./benchmark
+Initializing the performance benchmark...
+creating spmc_queue /spmc_benchmark_queue of size 64 and capacity 1024 with mode writer
+spmc_queue created
+creating spmc_queue /spmc_benchmark_queue of size 64 and capacity 1024 with mode reader
+spmc_queue created
+Initialized performance benchmark
+waiting for the producer & consumer thread to be ready...
 producer thread spawns
 consumer thread spawns
 performance benchmark starts
 performance benchmark ends
-Elapsed time: 1.109 seconds
-Throughput: 923.601 MB/s
-test_producer_sum = 33563254 and test_consumer_sum = 33563254
+Elapsed time: 3.300 seconds
+Throughput: 1241.186 MB/s
+test_producer_sum = 134246282 and test_consumer_sum = 134246282
 Destroying the performance benchmark...
 destroying spmc_queue /spmc_benchmark_queue of mode writer
 spmc_queue destroyed

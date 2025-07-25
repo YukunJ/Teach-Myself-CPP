@@ -11,7 +11,6 @@
 #include <time.h>
 
 #define UNUSED(arg) ((void)arg)
-#define L1_DCACHE_LINESIZE 64               // found via /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
 #define TEST_MESSAGE_COUNT 1024 * 1024 * 64 // 64 MB count * 64 bytes = 4 GB data
 
 #define QUEUE_CAPACITY 1024
