@@ -109,3 +109,11 @@ destroying spmc_queue /spmc_benchmark_queue of mode reader
 spmc_queue destroyed
 Destroyed performance benchmark
 ```
+
++ Day 5
+
+We will going to turn this currently SPSC queue into a SPMC queue.
+
+Firstly we adjust the code based on the code review comments from https://codereview.stackexchange.com/questions/297732/shared-memory-queue-implementation-in-c
+
+Secondly we change the index operation from modulo operator into the bitwise and with (2's power minus 1), after we ensure the `element_capacity` is a power of 2.
