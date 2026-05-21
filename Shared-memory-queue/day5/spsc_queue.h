@@ -1,0 +1,53 @@
+#ifndef SPSC_QUEUE_H
+#define SPSC_QUEUE_H
+
+#include <stdalign.h>
+#include <stdatomic.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#define SPSC_QUEUE_VERSION 0
+#define L1_DCACHE_LINESIZE 64 // found via /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
+
+enum spsc_mode { spsc_mode_reader = 0, spsc_mode_writer };
+
+typedef struct spsc_header {
+  int fd;
+  char *path;
+  enum spsc_mode mode;
+  size_t shared_size;
+} spsc_header_t;
+
+// the writer_idx and reader_idx do not handle arithmetic overflow
+// hence the queue should not deal with more than 2^64-1 elements before reset
+typedef struct spsc_shared {
+  uint8_t version;
+  size_t element_capacity;
+  size_t element_size;
+  atomic_bool initialized;
+  atomic_bool client_connected;
+
+  alignas(L1_DCACHE_LINESIZE) atomic_size_t writer_idx;
+  alignas(L1_DCACHE_LINESIZE) atomic_size_t reader_idx;
+
+  alignas(L1_DCACHE_LINESIZE) uint8_t data[];
+} spsc_shared_t;
+
+typedef struct spsc_queue {
+  spsc_header_t header;
+  spsc_shared_t *shared;
+} spsc_queue_t;
+
+spsc_queue_t *spsc_queue_create(const char *const path,
+                                size_t element_size,
+                                size_t element_capacity,
+                                enum spsc_mode mode);
+
+void spsc_queue_destroy(spsc_queue_t *queue);
+
+bool spsc_queue_enqueue(spsc_queue_t *queue, uint8_t *src_data);
+
+bool spsc_queue_dequeue(spsc_queue_t *queue, uint8_t *dst_data);
+
+#endif // SPSC_QUEUE_H

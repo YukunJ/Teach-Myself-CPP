@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #define _GNU_SOURCE
-#include "spmc_queue.h"
+#include "spsc_queue.h"
 #include <assert.h>
 #include <pthread.h>
 #include <sched.h>
@@ -13,14 +13,14 @@
 #define UNUSED(arg) ((void)arg)
 #define TEST_MESSAGE_COUNT 1024 * 1024 * 64 // 64 MB count * 64 bytes = 4 GB data
 
-#define QUEUE_CAPACITY 1024
+#define QUEUE_CAPACITY 1024 * 1024
 struct message {
   int64_t num;
   char padding[L1_DCACHE_LINESIZE - sizeof(int64_t)];
 };
 
-static spmc_queue_t *producer_queue = NULL;
-static spmc_queue_t *consumer_queue = NULL;
+static spsc_queue_t *producer_queue = NULL;
+static spsc_queue_t *consumer_queue = NULL;
 static pthread_t producer_thread;
 static pthread_t consumer_thread;
 static struct message *test_messages;
@@ -38,8 +38,8 @@ static void initialize_benchmark(void) {
   test_may_start = false;
   test_producer_sum = 0;
   test_consumer_sum = 0;
-  producer_queue = spmc_queue_create("/spmc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spmc_mode_writer);
-  consumer_queue = spmc_queue_create("/spmc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spmc_mode_reader);
+  producer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spsc_mode_writer);
+  consumer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spsc_mode_reader);
   assert(producer_queue != NULL);
   assert(consumer_queue != NULL);
   test_messages = calloc(TEST_MESSAGE_COUNT, sizeof(struct message));
@@ -62,8 +62,8 @@ static void pin_to_core(int core_num) {
 
 static void destroy_benchmark(void) {
   printf("Destroying the performance benchmark...\n");
-  spmc_queue_destroy(producer_queue);
-  spmc_queue_destroy(consumer_queue);
+  spsc_queue_destroy(producer_queue);
+  spsc_queue_destroy(consumer_queue);
   producer_queue = NULL;
   consumer_queue = NULL;
   free(test_messages);
@@ -80,7 +80,7 @@ static void *consumer_main(void *arg) {
   }
   int idx = 0;
   while (idx < TEST_MESSAGE_COUNT) {
-    bool dequeued = spmc_queue_dequeue(consumer_queue, (unsigned char *)&message_buf);
+    bool dequeued = spsc_queue_dequeue(consumer_queue, (unsigned char *)&message_buf);
     if (dequeued) {
       idx++;
       test_consumer_sum += message_buf.num;
@@ -98,7 +98,7 @@ static void *producer_main(void *arg) {
   }
   int idx = 0;
   while (idx < TEST_MESSAGE_COUNT) {
-    idx += (int)spmc_queue_enqueue(consumer_queue, (unsigned char *)&test_messages[idx]);
+    idx += (int)spsc_queue_enqueue(consumer_queue, (unsigned char *)&test_messages[idx]);
   }
   return NULL;
 }

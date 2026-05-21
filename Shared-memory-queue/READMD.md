@@ -1,6 +1,6 @@
 ### Design a Shared-Memory-Queue IPC
 
-In this tutorial, we will design a single-producer-multiple-consumer(SPMC) shared-memory queue to support inter-process commmunication on the same localhost.
+In this tutorial, we will design a single-producer-single-consumer(SPSC) shared-memory queue to support inter-process commmunication on the same localhost. This mechanism is widely used in high frequency trading while different components of a trading system are colocated on the same host, but for isolation of concerns running in different processes.
 
 + Day 1
 
@@ -112,8 +112,7 @@ Destroyed performance benchmark
 
 + Day 5
 
-We will going to turn this currently SPSC queue into a SPMC queue.
+We will perform two optimizations:
 
-Firstly we adjust the code based on the code review comments from https://codereview.stackexchange.com/questions/297732/shared-memory-queue-implementation-in-c
-
-Secondly we change the index operation from modulo operator into the bitwise and with (2's power minus 1), after we ensure the `element_capacity` is a power of 2.
++ change the index operation from modulo operator into the bitwise and with (2's power minus 1), after we ensure the `element_capacity` is a power of 2.
++ per reader and write create a locally cached index so it doesn't have to pull the index in the shared segment and cause cache coherence traffic.
