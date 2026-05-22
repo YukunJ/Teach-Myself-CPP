@@ -104,6 +104,7 @@ spsc_queue_t *spsc_queue_create(const char *const path,
     queue->shared->element_size = element_size;
     queue->shared->element_capacity = element_capacity;
 
+    queue->shared->local_writer_idx = 0;
     atomic_store(&queue->shared->writer_idx, 0);
     atomic_store(&queue->shared->client_connected, false);
     atomic_store(&queue->shared->initialized, true);
@@ -150,7 +151,7 @@ spsc_queue_t *spsc_queue_create(const char *const path,
 
       goto cleanup;
     }
-
+    queue->shared->local_reader_idx = 0;
     atomic_store(&queue->shared->reader_idx, 0);
     atomic_store(&queue->shared->client_connected, true);
   }
@@ -202,18 +203,21 @@ bool spsc_queue_enqueue(spsc_queue_t *queue, uint8_t *src_data) {
     return false;
   }
 
-  size_t reader_idx =
-      atomic_load_explicit(&queue->shared->reader_idx,
-                           memory_order_acquire);
-
+  size_t reader_idx = queue->shared->local_reader_idx;
   size_t writer_idx =
       atomic_load_explicit(&queue->shared->writer_idx,
                            memory_order_relaxed);
 
   if (writer_idx >=
       reader_idx + queue->shared->element_capacity) {
-    // queue full
-    return false;
+    reader_idx = atomic_load_explicit(&queue->shared->reader_idx, memory_order_acquire);
+    queue->shared->local_reader_idx = reader_idx;
+    if (writer_idx >=
+        reader_idx + queue->shared->element_capacity) {
+      // queue really full
+      return false;
+    }
+
   }
 
   size_t idx =
@@ -234,14 +238,17 @@ bool spsc_queue_dequeue(spsc_queue_t *queue, uint8_t *dst_data) {
   size_t reader_idx =
       atomic_load_explicit(&queue->shared->reader_idx,
                            memory_order_relaxed);
-
-  size_t writer_idx =
-      atomic_load_explicit(&queue->shared->writer_idx,
-                           memory_order_acquire);
+  size_t writer_idx = queue->shared->local_writer_idx;
 
   if (reader_idx >= writer_idx) {
-    // queue empty
-    return false;
+    size_t writer_idx =
+      atomic_load_explicit(&queue->shared->writer_idx,
+                           memory_order_acquire);
+    queue->shared->local_writer_idx = writer_idx;
+    if (reader_idx >= writer_idx) {
+      // queue fully empty
+      return false;
+    }
   }
 
   size_t idx =

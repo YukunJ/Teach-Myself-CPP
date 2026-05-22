@@ -116,3 +116,23 @@ We will perform two optimizations:
 
 + change the index operation from modulo operator into the bitwise and with (2's power minus 1), after we ensure the `element_capacity` is a power of 2.
 + per reader and write create a locally cached index so it doesn't have to pull the index in the shared segment and cause cache coherence traffic.
+
+This brings a significant performance improvement.
+
+```shell
+$ ./benchmark 
+waiting for the producer & consumer thread to be ready...
+producer thread spawns
+consumer thread spawns
+performance benchmark starts
+performance benchmark ends
+Elapsed time: 1.807 seconds
+Throughput: 2266.188 MB/s
+test_producer_sum = 134246282 and test_consumer_sum = 134246282
+Destroying the performance benchmark...
+Destroyed performance benchmark
+```
+
++ Day 6
+
+By now we have a decent performing SPSC shared-memory queue implementation in C. We will adopt and convert it to modern C++ implementation in hope of simplifing the code while maintaining its performance.

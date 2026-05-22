@@ -28,6 +28,10 @@ typedef struct spsc_shared {
   atomic_bool initialized;
   atomic_bool client_connected;
 
+  // local idx is to reduce the read frequency of the shared idx to save cache coherence traffic
+  alignas(L1_DCACHE_LINESIZE) size_t local_writer_idx;
+  alignas(L1_DCACHE_LINESIZE) size_t local_reader_idx;
+  
   alignas(L1_DCACHE_LINESIZE) atomic_size_t writer_idx;
   alignas(L1_DCACHE_LINESIZE) atomic_size_t reader_idx;
 
