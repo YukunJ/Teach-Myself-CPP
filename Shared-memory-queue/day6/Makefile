@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++20 -O3 -g -Wall -Wextra -Werror
+CFLAGS = -std=c++20 -O3 -g -Wall -Wextra -Werror -Wno-interference-size
 all: consumer producer benchmark
 	@echo "We compile the consumer & producer & benchmark!"
 	

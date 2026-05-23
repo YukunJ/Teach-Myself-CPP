@@ -5,15 +5,21 @@
 #include <cstddef>
 #include <cstdint>
 
-#define SPSC_QUEUE_VERSION 0
-#define L1_DCACHE_LINESIZE 64 // found via /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
+#ifdef __cpp_lib_hardware_interference_size
+  constexpr std::size_t kCacheLineSize = std::hardware_destructive_interference_size;
+#else
+  // Fallback for older compilers or environments where it's not defined
+  constexpr std::size_t kCacheLineSize = 64;
+#endif
 
-enum spsc_mode { spsc_mode_reader = 0, spsc_mode_writer };
+constexpr uint8_t kSpscQueueVersion = 0;
+
+enum class SpscMode { Reader, Writer };
 
 typedef struct spsc_header {
   int fd;
   char *path;
-  enum spsc_mode mode;
+  SpscMode mode;
   size_t shared_size;
 } spsc_header_t;
 
@@ -27,13 +33,13 @@ typedef struct spsc_shared {
   std::atomic<bool> client_connected;
 
   // local idx is to reduce the read frequency of the shared idx to save cache coherence traffic
-  alignas(L1_DCACHE_LINESIZE) size_t local_writer_idx;
-  alignas(L1_DCACHE_LINESIZE) size_t local_reader_idx;
+  alignas(kCacheLineSize) size_t local_writer_idx;
+  alignas(kCacheLineSize) size_t local_reader_idx;
   
-  alignas(L1_DCACHE_LINESIZE) std::atomic<size_t> writer_idx;
-  alignas(L1_DCACHE_LINESIZE) std::atomic<size_t> reader_idx;
+  alignas(kCacheLineSize) std::atomic<size_t> writer_idx;
+  alignas(kCacheLineSize) std::atomic<size_t> reader_idx;
 
-  alignas(L1_DCACHE_LINESIZE) uint8_t data[];
+  alignas(kCacheLineSize) uint8_t data[];
 } spsc_shared_t;
 
 typedef struct spsc_queue {
@@ -44,7 +50,7 @@ typedef struct spsc_queue {
 spsc_queue_t *spsc_queue_create(const char *const path,
                                 size_t element_size,
                                 size_t element_capacity,
-                                enum spsc_mode mode);
+                                SpscMode mode);
 
 void spsc_queue_destroy(spsc_queue_t *queue);
 

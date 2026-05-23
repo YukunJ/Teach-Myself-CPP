@@ -100,7 +100,7 @@ spsc_queue_t *spsc_queue_create(const char *const path,
   if (mode == spsc_mode_writer) {
     memset(queue->shared, 0, queue->header.shared_size);
 
-    queue->shared->version = SPSC_QUEUE_VERSION;
+    queue->shared->version = kSpscQueueVersion;
     queue->shared->element_size = element_size;
     queue->shared->element_capacity = element_capacity;
 

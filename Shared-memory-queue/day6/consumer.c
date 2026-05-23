@@ -8,7 +8,7 @@
 int main(void) {
   unsigned char buf[100];
   memset(buf, 0, 100);
-  spsc_queue_t *queue = spsc_queue_create("/spsc_test_queue", 100, 16, spsc_mode_reader);
+  spsc_queue_t *queue = spsc_queue_create("/spsc_test_queue", 100, 16, SpscMode::Reader);
   int counter = 0;
   while (true) {
     bool dequeue = spsc_queue_dequeue(queue, buf);

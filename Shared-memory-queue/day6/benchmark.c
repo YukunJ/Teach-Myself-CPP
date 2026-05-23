@@ -13,7 +13,7 @@
 #define QUEUE_CAPACITY 1024 * 1024
 struct message {
   int64_t num;
-  char padding[L1_DCACHE_LINESIZE - sizeof(int64_t)];
+  char padding[kCacheLineSize - sizeof(int64_t)];
 };
 
 static spsc_queue_t *producer_queue = NULL;
@@ -35,8 +35,8 @@ static void initialize_benchmark(void) {
   test_may_start = false;
   test_producer_sum = 0;
   test_consumer_sum = 0;
-  producer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spsc_mode_writer);
-  consumer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, spsc_mode_reader);
+  producer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Writer);
+  consumer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Reader);
   assert(producer_queue != NULL);
   assert(consumer_queue != NULL);
   test_messages = static_cast<struct message *>(calloc(TEST_MESSAGE_COUNT, sizeof(struct message)));

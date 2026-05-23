@@ -16,7 +16,7 @@
 #define QUEUE_CAPACITY 1024
 struct message {
   int64_t num;
-  char padding[L1_DCACHE_LINESIZE - sizeof(int64_t)];
+  char padding[k - sizeof(int64_t)];
 };
 
 static spmc_queue_t *producer_queue = NULL;

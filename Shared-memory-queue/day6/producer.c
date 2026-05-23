@@ -7,7 +7,7 @@
 
 int main(void) {
   unsigned char buf[100];
-  spsc_queue_t *queue = spsc_queue_create("/spsc_test_queue", 100, 16, spsc_mode_writer);
+  spsc_queue_t *queue = spsc_queue_create("/spsc_test_queue", 100, 16, SpscMode::Writer);
   sprintf((char *)buf, "Hello from spmc_queue producer!\n");
   int counter = 0;
   while (true) {

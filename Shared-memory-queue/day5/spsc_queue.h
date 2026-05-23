@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define SPSC_QUEUE_VERSION 0
+#define kSpscQueueVersion 0
 #define L1_DCACHE_LINESIZE 64 // found via /sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size
 
 enum spsc_mode { spsc_mode_reader = 0, spsc_mode_writer };
