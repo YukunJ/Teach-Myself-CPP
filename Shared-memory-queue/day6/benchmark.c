@@ -16,8 +16,8 @@ struct message {
   char padding[kCacheLineSize - sizeof(int64_t)];
 };
 
-static spsc_queue_t *producer_queue = NULL;
-static spsc_queue_t *consumer_queue = NULL;
+static SpscQueue *producer_queue = NULL;
+static SpscQueue *consumer_queue = NULL;
 static pthread_t producer_thread;
 static pthread_t consumer_thread;
 static struct message *test_messages;
