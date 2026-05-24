@@ -1,7 +1,7 @@
 #ifndef SPSC_QUEUE_H
 #define SPSC_QUEUE_H
-
 #include <atomic>
+#include <new>
 #include <cstddef>
 #include <cstdint>
 
@@ -11,6 +11,9 @@
   // Fallback for older compilers or environments where it's not defined
   constexpr std::size_t kCacheLineSize = 64;
 #endif
+
+static_assert(std::atomic<bool>::is_always_lock_free);
+static_assert(std::atomic<size_t>::is_always_lock_free);
 
 constexpr uint8_t kSpscQueueVersion = 0;
 
