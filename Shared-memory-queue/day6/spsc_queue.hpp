@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <cstdint>
+#include <sys/mman.h>
 
 #ifdef __cpp_lib_hardware_interference_size
   constexpr std::size_t kCacheLineSize = std::hardware_destructive_interference_size;
@@ -26,6 +27,7 @@ enum class SpscMode { Reader, Writer };
 // Process-local metadata only
 // --------------------------
 struct SpscHeader {
+  // RAII wrapper for file descriptor
   struct Fd {
     int fd = -1;
     explicit Fd(int fd = -1) : fd{fd} {};
@@ -47,10 +49,35 @@ struct SpscHeader {
       return *this;
     }
   };
+
+  // RAII wrapper for mmap region
+  struct MmappedRegion {
+    void *addr = MAP_FAILED;
+    size_t mapped_size = 0;
+    MmappedRegion(void *addr = MAP_FAILED, size_t size = 0) : addr{addr}, mapped_size{size} {}
+    ~MmappedRegion() { if (addr != MAP_FAILED) { munmap(addr, mapped_size); } }
+    // no copy, move only
+    MmappedRegion(const MmappedRegion &) = delete;
+    MmappedRegion &operator=(const MmappedRegion &) = delete;
+    MmappedRegion(MmappedRegion &&other) : addr{other.addr}, mapped_size{other.mapped_size} {
+      other.addr = MAP_FAILED;
+      other.mapped_size = 0;
+    }
+    MmappedRegion &operator=(MmappedRegion &&other) {
+      if (this != &other) {
+        if (addr != MAP_FAILED) { munmap(addr, mapped_size); }
+        addr = other.addr;
+        mapped_size = other.mapped_size;
+        other.addr = MAP_FAILED;
+        other.mapped_size = 0;
+      }
+      return *this;
+    }
+  };
   Fd fd;
   std::string path;
   SpscMode mode;
-  size_t shared_size;
+  MmappedRegion mmap_region;
 };
 
 // ---------------------------

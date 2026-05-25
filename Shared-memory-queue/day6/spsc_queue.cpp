@@ -26,7 +26,14 @@ static size_t round_up_power_of_2(size_t n) {
 SpscQueue *spsc_queue_create(const char *const path,
                                 size_t element_size,
                                 size_t element_capacity,
-                                SpscMode mode) {
+                                SpscMode mode) {                                  
+  SpscQueue *queue = nullptr;
+  void *mmap_addr = MAP_FAILED;
+  size_t shared_size = 0;
+  int fd = -1;
+  SpscHeader::Fd fd_wrapper;
+  SpscHeader::MmappedRegion mmap_wrapper;
+  
   if (!path || element_size == 0 || element_capacity == 0 ||
       element_capacity != round_up_power_of_2(element_capacity) ||
       (mode != SpscMode::Reader && mode != SpscMode::Writer)) {
@@ -42,27 +49,22 @@ SpscQueue *spsc_queue_create(const char *const path,
   if (mode == SpscMode::Writer) {
       shm_unlink(path); // optional cleanup BEFORE creation
   }
-  SpscQueue *queue = nullptr;
-  SpscShared *shared = nullptr;
-
-  int fd = -1;
-
-  // use offsetof(spsc_shared_t, data) instead of sizeof(spsc_shared_t)
-  // to avoid counting trailing padding of the structure layout
-  size_t shared_size =
-      offsetof(SpscShared, data) + element_size * element_capacity;
 
   int oflag =
       (mode == SpscMode::Reader) ? O_RDWR : O_RDWR | O_CREAT | O_EXCL;
   fd = shm_open(path, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-
   if (fd == -1) {
     perror("shm_open");
     goto cleanup;
   }
+  fd_wrapper = SpscHeader::Fd{fd};
 
+  // use offsetof(spsc_shared_t, data) instead of sizeof(spsc_shared_t)
+  // to avoid counting trailing padding of the structure layout
+  shared_size =
+      offsetof(SpscShared, data) + element_size * element_capacity;
   if (mode == SpscMode::Writer) {
-    int rt = ftruncate(fd, shared_size);
+    int rt = ftruncate(fd_wrapper.fd, shared_size);
 
     if (rt == -1) {
       perror("ftruncate");
@@ -70,20 +72,22 @@ SpscQueue *spsc_queue_create(const char *const path,
     }
   }
 
-  shared = static_cast<SpscShared *>(mmap(NULL, shared_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+  mmap_addr = mmap(NULL, shared_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_wrapper.fd, 0);
 
-  if (shared == MAP_FAILED) {
+  if (mmap_addr == MAP_FAILED) {
     perror("mmap");
     goto cleanup;
   }
+  mmap_wrapper = SpscHeader::MmappedRegion{mmap_addr, shared_size};
+
   queue = new SpscQueue{
     .header = {
-      .fd = SpscHeader::Fd{fd},
+      .fd = std::move(fd_wrapper),
       .path = std::string{path},
       .mode = mode,
-      .shared_size = shared_size,
+      .mmap_region = std::move(mmap_wrapper),
     },
-    .shared = shared,
+    .shared = reinterpret_cast<SpscShared *>(mmap_addr),
   };
 
   if (mode == SpscMode::Writer) {
@@ -152,14 +156,6 @@ SpscQueue *spsc_queue_create(const char *const path,
   return queue;
 
 cleanup:
-  if (shared && shared != MAP_FAILED) {
-    munmap(shared, shared_size);
-  }
-
-  if (fd != -1) {
-    close(fd);
-  }
-
   if (mode == SpscMode::Writer) {
     shm_unlink(path);
   }
@@ -174,7 +170,6 @@ void spsc_queue_destroy(SpscQueue *queue) {
   if(mode == SpscMode::Reader) {
       queue->shared->client_connected.store(false);
   }
-  munmap(queue->shared, queue->header.shared_size);
 
   if (mode == SpscMode::Writer) {
     // writer owns the lifecycle of the queue
