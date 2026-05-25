@@ -70,32 +70,21 @@ SpscQueue *spsc_queue_create(const char *const path,
     }
   }
 
-  queue = static_cast<SpscQueue *>(calloc(1, sizeof(SpscQueue)));
-
-  if (!queue) {
-    perror("calloc");
-    goto cleanup;
-  }
-
   shared = static_cast<SpscShared *>(mmap(NULL, shared_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
 
   if (shared == MAP_FAILED) {
     perror("mmap");
     goto cleanup;
   }
-
-  queue->header.fd = fd;
-  queue->header.mode = mode;
-
-  queue->header.path = strdup(path);
-
-  if (!queue->header.path) {
-    perror("strdup");
-    goto cleanup;
-  }
-
-  queue->header.shared_size = shared_size;
-  queue->shared = shared;
+  queue = new SpscQueue{
+    .header = {
+      .fd = SpscHeader::Fd{fd},
+      .path = std::string{path},
+      .mode = mode,
+      .shared_size = shared_size,
+    },
+    .shared = shared,
+  };
 
   if (mode == SpscMode::Writer) {
     queue->shared->version = kSpscQueueVersion;
@@ -175,32 +164,23 @@ cleanup:
     shm_unlink(path);
   }
 
-  if (queue) {
-    free(queue->header.path);
-  }
-
-  free(queue);
+  delete queue;
 
   return nullptr;
 }
 
 void spsc_queue_destroy(SpscQueue *queue) {
-  int fd = queue->header.fd;
-  char *path = queue->header.path;
   SpscMode mode = queue->header.mode;
   if(mode == SpscMode::Reader) {
       queue->shared->client_connected.store(false);
   }
   munmap(queue->shared, queue->header.shared_size);
 
-  close(fd);
-
   if (mode == SpscMode::Writer) {
     // writer owns the lifecycle of the queue
-    shm_unlink(path);
+    shm_unlink(queue->header.path.c_str());
   }
-  free(path);
-  free(queue);
+  delete queue;
 }
 
 bool spsc_queue_enqueue(SpscQueue *queue, uint8_t *src_data) {

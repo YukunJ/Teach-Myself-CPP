@@ -2,6 +2,7 @@
 #define SPSC_QUEUE_H
 #include <atomic>
 #include <new>
+#include <string>
 #include <type_traits>
 #include <cstddef>
 #include <cstdint>
@@ -21,15 +22,40 @@ constexpr uint8_t kSpscQueueVersion = 0;
 
 enum class SpscMode { Reader, Writer };
 
+// ---------------------------
+// Process-local metadata only
+// --------------------------
 struct SpscHeader {
-  int fd;
-  char *path;
+  struct Fd {
+    int fd = -1;
+    explicit Fd(int fd = -1) : fd{fd} {};
+    ~Fd() {
+      if (fd != -1) {
+        close(fd);
+      }
+    }
+    // no copy, move only
+    Fd(const Fd &) = delete;
+    Fd &operator=(const Fd &) = delete;
+    Fd(Fd &&other) : fd{other.fd} { other.fd = -1; }
+    Fd &operator=(Fd &&other) {
+      if (this != &other) {
+        if (fd != -1) { close(fd); }
+        fd = other.fd;
+        other.fd = -1;
+      }
+      return *this;
+    }
+  };
+  Fd fd;
+  std::string path;
   SpscMode mode;
   size_t shared_size;
 };
 
-// the writer_idx and reader_idx do not handle arithmetic overflow
-// hence the queue should not deal with more than 2^64-1 elements before reset
+// ---------------------------
+// Shared memory layout (MUST be POD)
+// ---------------------------
 struct SpscShared {
   uint8_t version;
   size_t element_capacity;
@@ -46,7 +72,6 @@ struct SpscShared {
 
   alignas(kCacheLineSize) uint8_t data[];
 };
-
 static_assert(std::is_trivially_copyable_v<SpscShared>);
 static_assert(std::is_standard_layout_v<SpscShared>);
 
