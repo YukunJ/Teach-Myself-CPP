@@ -7,7 +7,12 @@
 
 int main(void) {
   unsigned char buf[100];
-  SpscQueue *queue = spsc_queue_create("/spsc_test_queue", 100, 16, SpscMode::Writer);
+  auto result = SpscQueue::create("/spsc_test_queue", 100, 16, SpscMode::Writer);
+  if (!result) {
+    fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(result.error()));
+    return 1;
+  }
+  SpscQueue *queue = result.value();
   sprintf((char *)buf, "Hello from spmc_queue producer!\n");
   int counter = 0;
   while (true) {

@@ -23,175 +23,142 @@ static size_t round_up_power_of_2(size_t n) {
   return pow;
 }
 
-SpscQueue *spsc_queue_create(const char *const path,
-                                size_t element_size,
-                                size_t element_capacity,
-                                SpscMode mode) {                                  
-  SpscQueue *queue = nullptr;
-  void *mmap_addr = MAP_FAILED;
-  size_t shared_size = 0;
-  int fd = -1;
-  SpscHeader::Fd fd_wrapper;
-  SpscHeader::MmappedRegion mmap_wrapper;
-  
-  if (!path || element_size == 0 || element_capacity == 0 ||
+std::expected<SpscQueue*, SpscError> SpscQueue::create(const char *const path,
+                  size_t element_size,
+                  size_t element_capacity,
+                  SpscMode mode) {
+
+  if (!path ||
+      element_size == 0 ||
+      element_capacity == 0 ||
       element_capacity != round_up_power_of_2(element_capacity) ||
       (mode != SpscMode::Reader && mode != SpscMode::Writer)) {
 
-    fprintf(stderr,
-            "spsc_queue_create: invalid arguments "
-            "(path:%s element_size:%zu element_capacity:%zu mode:%d)\n",
-            path, element_size, element_capacity, static_cast<std::underlying_type_t<SpscMode>>(mode));
-
-    return nullptr;
-  }
-  // in case the shared memory queue is still dangling around from last writer crash
-  if (mode == SpscMode::Writer) {
-      shm_unlink(path); // optional cleanup BEFORE creation
+    return std::unexpected(SpscError::InvalidArguments);
   }
 
-  int oflag =
-      (mode == SpscMode::Reader) ? O_RDWR : O_RDWR | O_CREAT | O_EXCL;
-  fd = shm_open(path, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-  if (fd == -1) {
-    perror("shm_open");
-    goto cleanup;
-  }
-  fd_wrapper = SpscHeader::Fd{fd};
-
-  // use offsetof(spsc_shared_t, data) instead of sizeof(spsc_shared_t)
-  // to avoid counting trailing padding of the structure layout
-  shared_size =
-      offsetof(SpscShared, data) + element_size * element_capacity;
-  if (mode == SpscMode::Writer) {
-    int rt = ftruncate(fd_wrapper.fd, shared_size);
-
-    if (rt == -1) {
-      perror("ftruncate");
-      goto cleanup;
-    }
-  }
-
-  mmap_addr = mmap(NULL, shared_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_wrapper.fd, 0);
-
-  if (mmap_addr == MAP_FAILED) {
-    perror("mmap");
-    goto cleanup;
-  }
-  mmap_wrapper = SpscHeader::MmappedRegion{mmap_addr, shared_size};
-
-  queue = new SpscQueue{
-    .header = {
-      .fd = std::move(fd_wrapper),
-      .path = std::string{path},
-      .mode = mode,
-      .mmap_region = std::move(mmap_wrapper),
-    },
-    .shared = reinterpret_cast<SpscShared *>(mmap_addr),
-  };
-
-  if (mode == SpscMode::Writer) {
-    queue->shared->version = kSpscQueueVersion;
-    queue->shared->element_size = element_size;
-    queue->shared->element_capacity = element_capacity;
-
-    queue->shared->local_writer_idx = 0;
-    queue->shared->local_reader_idx = 0;
-    queue->shared->writer_idx.store(0);
-    queue->shared->reader_idx.store(0);
-
-    queue->shared->client_connected.store(false);
-    queue->shared->initialized.store(true);
-  }
-
-  if (mode == SpscMode::Reader) {
-    int attempt = 0;
-
-    while (!queue->shared->initialized.load()) {
-      attempt++;
-
-      if (attempt == 3) {
-        fprintf(stderr,
-                "spsc_queue: reader mode encountered shared memory not "
-                "initialized yet by writer. waited %d attempts. "
-                "giving up now\n",
-                attempt);
-
-        goto cleanup;
-      }
-
-      fprintf(stderr,
-              "spsc_queue: reader mode encountered shared memory not "
-              "initialized yet by writer. wait 10 seconds...\n");
-
-      sleep(10);
-    }
-
-    if (queue->shared->version != kSpscQueueVersion) {
-      fprintf(stderr, "spsc_queue: reader expect version %d but see the queue being version %d\n", kSpscQueueVersion, queue->shared->version);
-      goto cleanup;
-    }
-
-    if (queue->shared->element_capacity != element_capacity) {
-      fprintf(stderr,
-              "spsc_queue: element_capacity %zu != queue "
-              "element_capacity %zu\n",
-              queue->shared->element_capacity,
-              element_capacity);
-
-      goto cleanup;
-    }
-
-    if (queue->shared->element_size < element_size) {
-      fprintf(stderr,
-              "spsc_queue: element size %zu > queue element size %zu\n",
-              element_size,
-              queue->shared->element_size);
-
-      goto cleanup;
-    }
-    queue->shared->client_connected.store(true);
-  }
-
-  return queue;
-
-cleanup:
+  // cleanup stale shm from previous writer crash
   if (mode == SpscMode::Writer) {
     shm_unlink(path);
   }
 
-  delete queue;
+  int oflag = (mode == SpscMode::Reader) ? O_RDWR : O_RDWR | O_CREAT | O_EXCL;
 
-  return nullptr;
+  int raw_fd = shm_open(path, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+
+  if (raw_fd == -1) {
+    return std::unexpected(SpscError::ShmOpenFailed);
+  }
+
+  SpscHeader::Fd fd{raw_fd};
+
+  size_t shared_size = offsetof(SpscShared, data) + element_size * element_capacity;
+
+  if (mode == SpscMode::Writer) {
+    if (ftruncate(fd.fd, shared_size) == -1) {
+      return std::unexpected(SpscError::FtruncateFailed);
+    }
+  }
+
+  void* mmap_addr = mmap(nullptr, shared_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd.fd, 0);
+
+  if (mmap_addr == MAP_FAILED) {
+    return std::unexpected(SpscError::MmapFailed);
+  }
+
+  SpscHeader::MmappedRegion mmap_region{
+      mmap_addr,
+      shared_size
+  };
+
+  SpscHeader header{
+      .fd = std::move(fd),
+      .path = std::string{path},
+      .mode = mode,
+      .mmap_region = std::move(mmap_region),
+  };
+
+  auto* queue = new SpscQueue(std::move(header));
+
+  if (mode == SpscMode::Writer) {
+    queue->shared_->version = kSpscQueueVersion;
+    queue->shared_->element_size = element_size;
+    queue->shared_->element_capacity = element_capacity;
+
+    queue->shared_->local_writer_idx = 0;
+    queue->shared_->local_reader_idx = 0;
+
+    queue->shared_->writer_idx.store(0);
+    queue->shared_->reader_idx.store(0);
+
+    queue->shared_->client_connected.store(false);
+    queue->shared_->initialized.store(true);
+  }
+
+  if (mode == SpscMode::Reader) {
+
+    int attempt = 0;
+
+    while (!queue->shared_->initialized.load()) {
+
+      ++attempt;
+
+      if (attempt == 3) {
+        delete queue;
+        return std::unexpected(SpscError::InvalidArguments);
+      }
+
+      sleep(10);
+    }
+
+    if (queue->shared_->version != kSpscQueueVersion) {
+      delete queue;
+      return std::unexpected(SpscError::VersionMismatch);
+    }
+
+    if (queue->shared_->element_capacity != element_capacity) {
+      delete queue;
+      return std::unexpected(SpscError::CapacityMismatch);
+    }
+
+    if (queue->shared_->element_size < element_size) {
+      delete queue;
+      return std::unexpected(SpscError::ElementSizeMismatch);
+    }
+
+    queue->shared_->client_connected.store(true);
+  }
+
+  return queue;
 }
 
 void spsc_queue_destroy(SpscQueue *queue) {
-  SpscMode mode = queue->header.mode;
+  SpscMode mode = queue->header_.mode;
   if(mode == SpscMode::Reader) {
-      queue->shared->client_connected.store(false);
+      queue->shared_->client_connected.store(false);
   }
 
   if (mode == SpscMode::Writer) {
     // writer owns the lifecycle of the queue
-    shm_unlink(queue->header.path.c_str());
+    shm_unlink(queue->header_.path.c_str());
   }
   delete queue;
 }
 
 bool spsc_queue_enqueue(SpscQueue *queue, uint8_t *src_data) {
-  if (!queue->shared->client_connected.load()) {
+  if (!queue->shared_->client_connected.load()) {
     return false;
   }
 
-  size_t reader_idx = queue->shared->local_reader_idx;
-  size_t writer_idx = std::atomic_load_explicit(&queue->shared->writer_idx, std::memory_order_relaxed);
+  size_t reader_idx = queue->shared_->local_reader_idx;
+  size_t writer_idx = std::atomic_load_explicit(&queue->shared_->writer_idx, std::memory_order_relaxed);
 
   if (writer_idx >=
-      reader_idx + queue->shared->element_capacity) {
-    reader_idx = std::atomic_load_explicit(&queue->shared->reader_idx, std::memory_order_acquire);
-    queue->shared->local_reader_idx = reader_idx;
+      reader_idx + queue->shared_->element_capacity) {
+    reader_idx = std::atomic_load_explicit(&queue->shared_->reader_idx, std::memory_order_acquire);
+    queue->shared_->local_reader_idx = reader_idx;
     if (writer_idx >=
-        reader_idx + queue->shared->element_capacity) {
+        reader_idx + queue->shared_->element_capacity) {
       // queue really full
       return false;
     }
@@ -199,22 +166,22 @@ bool spsc_queue_enqueue(SpscQueue *queue, uint8_t *src_data) {
   }
 
   size_t idx =
-      writer_idx & (queue->shared->element_capacity - 1);
+      writer_idx & (queue->shared_->element_capacity - 1);
 
-  memcpy(&queue->shared->data[idx * queue->shared->element_size],
+  memcpy(&queue->shared_->data[idx * queue->shared_->element_size],
          src_data,
-         queue->shared->element_size);
-  std::atomic_store_explicit(&queue->shared->writer_idx, writer_idx + 1, std::memory_order_release);
+         queue->shared_->element_size);
+  std::atomic_store_explicit(&queue->shared_->writer_idx, writer_idx + 1, std::memory_order_release);
   return true;
 }
 
 bool spsc_queue_dequeue(SpscQueue *queue, uint8_t *dst_data) {
-  size_t reader_idx = std::atomic_load_explicit(&queue->shared->reader_idx, std::memory_order_relaxed);
-  size_t writer_idx = queue->shared->local_writer_idx;
+  size_t reader_idx = std::atomic_load_explicit(&queue->shared_->reader_idx, std::memory_order_relaxed);
+  size_t writer_idx = queue->shared_->local_writer_idx;
 
   if (reader_idx >= writer_idx) {
-    writer_idx = std::atomic_load_explicit(&queue->shared->writer_idx, std::memory_order_acquire);
-    queue->shared->local_writer_idx = writer_idx;
+    writer_idx = std::atomic_load_explicit(&queue->shared_->writer_idx, std::memory_order_acquire);
+    queue->shared_->local_writer_idx = writer_idx;
     if (reader_idx >= writer_idx) {
       // queue fully empty
       return false;
@@ -222,11 +189,11 @@ bool spsc_queue_dequeue(SpscQueue *queue, uint8_t *dst_data) {
   }
 
   size_t idx =
-      reader_idx & (queue->shared->element_capacity - 1);
+      reader_idx & (queue->shared_->element_capacity - 1);
 
   memcpy(dst_data,
-         &queue->shared->data[idx * queue->shared->element_size],
-         queue->shared->element_size);
-  std::atomic_store_explicit(&queue->shared->reader_idx, reader_idx + 1, std::memory_order_release);
+         &queue->shared_->data[idx * queue->shared_->element_size],
+         queue->shared_->element_size);
+  std::atomic_store_explicit(&queue->shared_->reader_idx, reader_idx + 1, std::memory_order_release);
   return true;
 }

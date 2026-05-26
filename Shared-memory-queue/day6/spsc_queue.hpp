@@ -1,7 +1,9 @@
 #ifndef SPSC_QUEUE_H
 #define SPSC_QUEUE_H
 #include <atomic>
+#include <utility>
 #include <new>
+#include <expected>
 #include <string>
 #include <type_traits>
 #include <cstddef>
@@ -22,6 +24,17 @@ static_assert(std::atomic<size_t>::is_always_lock_free);
 constexpr uint8_t kSpscQueueVersion = 0;
 
 enum class SpscMode { Reader, Writer };
+
+enum class SpscError {
+  None,
+  InvalidArguments,
+  ShmOpenFailed,
+  FtruncateFailed,
+  MmapFailed,
+  VersionMismatch,
+  CapacityMismatch,
+  ElementSizeMismatch,
+};
 
 // ---------------------------
 // Process-local metadata only
@@ -104,14 +117,21 @@ static_assert(std::is_standard_layout_v<SpscShared>);
 
 class SpscQueue {
 public:
-  SpscHeader header;
-  SpscShared *shared;
-};
-
-SpscQueue *spsc_queue_create(const char *const path,
+  // factory method to create the queue, returns nullptr on failure
+  static std::expected<SpscQueue *, SpscError> create(const char *const path,
                                 size_t element_size,
                                 size_t element_capacity,
                                 SpscMode mode);
+  SpscQueue(const SpscQueue &) = delete;
+  SpscQueue &operator=(const SpscQueue &) = delete;
+  SpscQueue(SpscQueue &&) = default;
+  SpscQueue &operator=(SpscQueue &&) = default;
+  SpscHeader header_;
+  SpscShared *shared_;
+private:
+  SpscQueue(SpscHeader &&header) : header_{std::move(header)}, shared_{reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {}
+
+};
 
 void spsc_queue_destroy(SpscQueue *queue);
 

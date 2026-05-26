@@ -8,7 +8,12 @@
 int main(void) {
   unsigned char buf[100];
   memset(buf, 0, 100);
-  SpscQueue *queue = spsc_queue_create("/spsc_test_queue", 100, 16, SpscMode::Reader);
+  auto result = SpscQueue::create("/spsc_test_queue", 100, 16, SpscMode::Reader);
+  if (!result) {
+    fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(result.error()));
+    return 1;
+  }
+  SpscQueue *queue = result.value();
   int counter = 0;
   while (true) {
     bool dequeue = spsc_queue_dequeue(queue, buf);

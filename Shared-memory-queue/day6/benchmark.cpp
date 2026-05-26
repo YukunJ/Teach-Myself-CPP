@@ -35,8 +35,14 @@ static void initialize_benchmark(void) {
   test_may_start = false;
   test_producer_sum = 0;
   test_consumer_sum = 0;
-  producer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Writer);
-  consumer_queue = spsc_queue_create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Reader);
+  auto producer_result = SpscQueue::create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Writer);
+  auto consumer_result = SpscQueue::create("/spsc_benchmark_queue", sizeof(struct message), QUEUE_CAPACITY, SpscMode::Reader);
+  if (!producer_result || !consumer_result) {
+    fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(producer_result ? producer_result.error() : consumer_result.error()));
+    exit(1);
+  }
+  producer_queue = producer_result.value();
+  consumer_queue = consumer_result.value();
   assert(producer_queue != NULL);
   assert(consumer_queue != NULL);
   test_messages = static_cast<struct message *>(calloc(TEST_MESSAGE_COUNT, sizeof(struct message)));
