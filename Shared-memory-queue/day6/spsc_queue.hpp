@@ -4,6 +4,7 @@
 #include <utility>
 #include <new>
 #include <expected>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <cstddef>
@@ -118,25 +119,22 @@ static_assert(std::is_standard_layout_v<SpscShared>);
 class SpscQueue {
 public:
   // factory method to create the queue, returns nullptr on failure
-  static std::expected<SpscQueue *, SpscError> create(const char *const path,
+  static std::expected<std::unique_ptr<SpscQueue>, SpscError> create(const char *const path,
                                 size_t element_size,
                                 size_t element_capacity,
                                 SpscMode mode);
+  ~SpscQueue() noexcept;
   SpscQueue(const SpscQueue &) = delete;
   SpscQueue &operator=(const SpscQueue &) = delete;
-  SpscQueue(SpscQueue &&) = default;
-  SpscQueue &operator=(SpscQueue &&) = default;
+  SpscQueue(SpscQueue &&) noexcept = default;
+  SpscQueue &operator=(SpscQueue &&) noexcept = default;
+  SpscMode mode() const noexcept { return header_.mode; }
+  [[nodiscard]] bool try_enqueue(uint8_t *src_data) noexcept;
+  [[nodiscard]] bool try_dequeue(uint8_t *dst_data) noexcept;
+private:
+  explicit SpscQueue(SpscHeader &&header) : header_{std::move(header)}, shared_{reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {}
   SpscHeader header_;
   SpscShared *shared_;
-private:
-  SpscQueue(SpscHeader &&header) : header_{std::move(header)}, shared_{reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {}
-
 };
-
-void spsc_queue_destroy(SpscQueue *queue);
-
-bool spsc_queue_enqueue(SpscQueue *queue, uint8_t *src_data);
-
-bool spsc_queue_dequeue(SpscQueue *queue, uint8_t *dst_data);
 
 #endif // SPSC_QUEUE_H

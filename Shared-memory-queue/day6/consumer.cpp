@@ -13,16 +13,15 @@ int main(void) {
     fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(result.error()));
     return 1;
   }
-  SpscQueue *queue = result.value();
+  auto queue = std::move(result.value());
   int counter = 0;
   while (true) {
-    bool dequeue = spsc_queue_dequeue(queue, buf);
+    bool dequeue = queue->try_dequeue(buf);
     counter += (int)dequeue;
     if (counter == 1024) {
       break;
     }
   }
   printf("Received %d message from producer: %s", counter, buf);
-  spsc_queue_destroy(queue);
   return 0;
 }

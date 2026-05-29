@@ -12,17 +12,16 @@ int main(void) {
     fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(result.error()));
     return 1;
   }
-  SpscQueue *queue = result.value();
+  auto queue = std::move(result.value());
   sprintf((char *)buf, "Hello from spmc_queue producer!\n");
   int counter = 0;
   while (true) {
-    bool enqueue = spsc_queue_enqueue(queue, buf);
+    bool enqueue = queue->try_enqueue(buf);
     counter += (int)enqueue;
     if (counter == 1024) {
       break;
     }
   }
-  spsc_queue_destroy(queue);
   printf("producer enqueued 1024 messages into the queue\n");
   return 0;
 }

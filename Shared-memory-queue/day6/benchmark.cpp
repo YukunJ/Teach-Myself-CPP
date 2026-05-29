@@ -16,8 +16,8 @@ struct message {
   char padding[kCacheLineSize - sizeof(int64_t)];
 };
 
-static SpscQueue *producer_queue = NULL;
-static SpscQueue *consumer_queue = NULL;
+static std::unique_ptr<SpscQueue> producer_queue = nullptr;
+static std::unique_ptr<SpscQueue> consumer_queue = nullptr;
 static pthread_t producer_thread;
 static pthread_t consumer_thread;
 static struct message *test_messages;
@@ -41,10 +41,10 @@ static void initialize_benchmark(void) {
     fprintf(stderr, "Failed to create SpscQueue: %d\n", static_cast<int>(producer_result ? producer_result.error() : consumer_result.error()));
     exit(1);
   }
-  producer_queue = producer_result.value();
-  consumer_queue = consumer_result.value();
-  assert(producer_queue != NULL);
-  assert(consumer_queue != NULL);
+  producer_queue = std::move(producer_result.value());
+  consumer_queue = std::move(consumer_result.value());
+  assert(producer_queue != nullptr);
+  assert(consumer_queue != nullptr);
   test_messages = static_cast<struct message *>(calloc(TEST_MESSAGE_COUNT, sizeof(struct message)));
   for (int i = 0; i < TEST_MESSAGE_COUNT; i++) {
     int random_number = rand() % 5;
@@ -65,8 +65,6 @@ static void pin_to_core(int core_num) {
 
 static void destroy_benchmark(void) {
   printf("Destroying the performance benchmark...\n");
-  spsc_queue_destroy(producer_queue);
-  spsc_queue_destroy(consumer_queue);
   producer_queue = NULL;
   consumer_queue = NULL;
   free(test_messages);
@@ -83,7 +81,7 @@ static void *consumer_main(void *arg) {
   }
   int idx = 0;
   while (idx < TEST_MESSAGE_COUNT) {
-    bool dequeued = spsc_queue_dequeue(consumer_queue, (unsigned char *)&message_buf);
+    bool dequeued = consumer_queue->try_dequeue((unsigned char *)&message_buf);
     if (dequeued) {
       idx++;
       test_consumer_sum += message_buf.num;
@@ -101,7 +99,7 @@ static void *producer_main(void *arg) {
   }
   int idx = 0;
   while (idx < TEST_MESSAGE_COUNT) {
-    idx += (int)spsc_queue_enqueue(consumer_queue, (unsigned char *)&test_messages[idx]);
+    idx += (int)producer_queue->try_enqueue((unsigned char *)&test_messages[idx]);
   }
   return NULL;
 }
