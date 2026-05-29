@@ -104,7 +104,7 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
       ++attempt;
 
       if (attempt == 3) {
-        return std::unexpected(SpscError::InvalidArguments);
+        return std::unexpected(SpscError::ConnectionTimeout);
       }
 
       sleep(10);
@@ -122,7 +122,7 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
       return std::unexpected(SpscError::ElementSizeMismatch);
     }
 
-    queue->shared_->client_connected.store(true);
+    queue->shared_->client_connected.store(true, std::memory_order_release);
   }
 
   return queue;
@@ -130,18 +130,18 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
 
 SpscQueue::~SpscQueue() noexcept {
   SpscMode mode = this->header_.mode;
-  if(mode == SpscMode::Reader) {
-      this->shared_->client_connected.store(false);
-  }
   if (mode == SpscMode::Writer) {
     // writer owns the lifecycle of the queue
     shm_unlink(this->header_.path.c_str());
   }
+  if(mode == SpscMode::Reader) {
+    this->shared_->client_connected.store(false, std::memory_order_release);
+  }
 }
 
 
-bool SpscQueue::try_enqueue(uint8_t *src_data) noexcept{
-  if (!this->shared_->client_connected.load()) {
+bool SpscQueue::try_enqueue(const uint8_t *src_data) noexcept{
+  if (!this->shared_->client_connected.load(std::memory_order_acquire)) {
     return false;
   }
   assert(this->mode() == SpscMode::Writer);

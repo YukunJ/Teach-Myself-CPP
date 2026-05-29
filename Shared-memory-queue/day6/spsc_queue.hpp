@@ -27,7 +27,6 @@ constexpr uint8_t kSpscQueueVersion = 0;
 enum class SpscMode { Reader, Writer };
 
 enum class SpscError {
-  None,
   InvalidArguments,
   ShmOpenFailed,
   FtruncateFailed,
@@ -35,6 +34,7 @@ enum class SpscError {
   VersionMismatch,
   CapacityMismatch,
   ElementSizeMismatch,
+  ConnectionTimeout,
 };
 
 // ---------------------------
@@ -111,7 +111,7 @@ struct SpscShared {
   alignas(kCacheLineSize) std::atomic<size_t> writer_idx;
   alignas(kCacheLineSize) std::atomic<size_t> reader_idx;
 
-  alignas(kCacheLineSize) uint8_t data[];
+  alignas(kCacheLineSize) std::byte data[];
 };
 static_assert(std::is_trivially_copyable_v<SpscShared>);
 static_assert(std::is_standard_layout_v<SpscShared>);
@@ -119,7 +119,7 @@ static_assert(std::is_standard_layout_v<SpscShared>);
 class SpscQueue {
 public:
   // factory method to create the queue, returns nullptr on failure
-  static std::expected<std::unique_ptr<SpscQueue>, SpscError> create(const char *const path,
+  [[nodiscard]] static std::expected<std::unique_ptr<SpscQueue>, SpscError> create(const char *const path,
                                 size_t element_size,
                                 size_t element_capacity,
                                 SpscMode mode);
@@ -129,7 +129,7 @@ public:
   SpscQueue(SpscQueue &&) noexcept = default;
   SpscQueue &operator=(SpscQueue &&) noexcept = default;
   SpscMode mode() const noexcept { return header_.mode; }
-  [[nodiscard]] bool try_enqueue(uint8_t *src_data) noexcept;
+  [[nodiscard]] bool try_enqueue(const uint8_t *src_data) noexcept;
   [[nodiscard]] bool try_dequeue(uint8_t *dst_data) noexcept;
 private:
   explicit SpscQueue(SpscHeader &&header) : header_{std::move(header)}, shared_{reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {}
