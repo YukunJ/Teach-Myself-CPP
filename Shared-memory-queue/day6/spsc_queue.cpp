@@ -81,25 +81,25 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
   auto queue = std::unique_ptr<SpscQueue>(new SpscQueue{std::move(header)});
 
   if (mode == SpscMode::Writer) {
-    queue->shared_->version = kSpscQueueVersion;
-    queue->shared_->element_size = element_size;
-    queue->shared_->element_capacity = element_capacity;
+    queue->shared_.version = kSpscQueueVersion;
+    queue->shared_.element_size = element_size;
+    queue->shared_.element_capacity = element_capacity;
 
-    queue->shared_->local_writer_idx = 0;
-    queue->shared_->local_reader_idx = 0;
+    queue->shared_.local_writer_idx = 0;
+    queue->shared_.local_reader_idx = 0;
 
-    queue->shared_->writer_idx.store(0);
-    queue->shared_->reader_idx.store(0);
+    queue->shared_.writer_idx.store(0);
+    queue->shared_.reader_idx.store(0);
 
-    queue->shared_->client_connected.store(false);
-    queue->shared_->initialized.store(true);
+    queue->shared_.client_connected.store(false);
+    queue->shared_.initialized.store(true);
   }
 
   if (mode == SpscMode::Reader) {
 
     int attempt = 0;
 
-    while (!queue->shared_->initialized.load()) {
+    while (!queue->shared_.initialized.load()) {
 
       ++attempt;
 
@@ -110,50 +110,50 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
       sleep(10);
     }
 
-    if (queue->shared_->version != kSpscQueueVersion) {
+    if (queue->shared_.version != kSpscQueueVersion) {
       return std::unexpected(SpscError::VersionMismatch);
     }
 
-    if (queue->shared_->element_capacity != element_capacity) {
+    if (queue->shared_.element_capacity != element_capacity) {
       return std::unexpected(SpscError::CapacityMismatch);
     }
 
-    if (queue->shared_->element_size < element_size) {
+    if (queue->shared_.element_size < element_size) {
       return std::unexpected(SpscError::ElementSizeMismatch);
     }
 
-    queue->shared_->client_connected.store(true, std::memory_order_release);
+    queue->shared_.client_connected.store(true, std::memory_order_release);
   }
 
   return queue;
 }
 
 SpscQueue::~SpscQueue() noexcept {
-  SpscMode mode = this->header_.mode;
+  SpscMode mode = header_.mode;
   if (mode == SpscMode::Writer) {
     // writer owns the lifecycle of the queue
-    shm_unlink(this->header_.path.c_str());
+    shm_unlink(header_.path.c_str());
   }
   if(mode == SpscMode::Reader) {
-    this->shared_->client_connected.store(false, std::memory_order_release);
+    shared_.client_connected.store(false, std::memory_order_release);
   }
 }
 
 
 bool SpscQueue::try_enqueue(const uint8_t *src_data) noexcept{
-  if (!this->shared_->client_connected.load(std::memory_order_acquire)) {
+  if (!shared_.client_connected.load(std::memory_order_acquire)) [[unlikely]] {
     return false;
   }
-  assert(this->mode() == SpscMode::Writer);
-  size_t reader_idx = this->shared_->local_reader_idx;
-  size_t writer_idx = std::atomic_load_explicit(&this->shared_->writer_idx, std::memory_order_relaxed);
+  assert(mode() == SpscMode::Writer);
+  size_t reader_idx = shared_.local_reader_idx;
+  size_t writer_idx = shared_.writer_idx.load(std::memory_order_relaxed);
 
   if (writer_idx >=
-      reader_idx + this->shared_->element_capacity) {
-    reader_idx = std::atomic_load_explicit(&this->shared_->reader_idx, std::memory_order_acquire);
-    this->shared_->local_reader_idx = reader_idx;
+      reader_idx + shared_.element_capacity) {
+    reader_idx = shared_.reader_idx.load(std::memory_order_acquire);
+    shared_.local_reader_idx = reader_idx;
     if (writer_idx >=
-        reader_idx + this->shared_->element_capacity) {
+        reader_idx + shared_.element_capacity) {
       // queue really full
       return false;
     }
@@ -161,23 +161,23 @@ bool SpscQueue::try_enqueue(const uint8_t *src_data) noexcept{
   }
 
   size_t idx =
-      writer_idx & (this->shared_->element_capacity - 1);
+      writer_idx & (shared_.element_capacity - 1);
 
-  memcpy(&this->shared_->data[idx * this->shared_->element_size],
+  std::memcpy(&shared_.data[idx * shared_.element_size],
          src_data,
-         this->shared_->element_size);
-  std::atomic_store_explicit(&this->shared_->writer_idx, writer_idx + 1, std::memory_order_release);
+         shared_.element_size);
+  shared_.writer_idx.store(writer_idx + 1, std::memory_order_release);
   return true;
 }
 
 bool SpscQueue::try_dequeue(uint8_t *dst_data) noexcept {
-  assert(this->mode() == SpscMode::Reader);
-  size_t reader_idx = std::atomic_load_explicit(&this->shared_->reader_idx, std::memory_order_relaxed);
-  size_t writer_idx = this->shared_->local_writer_idx;
+  assert(mode() == SpscMode::Reader);
+  size_t reader_idx = shared_.reader_idx.load(std::memory_order_relaxed);
+  size_t writer_idx = shared_.local_writer_idx;
 
   if (reader_idx >= writer_idx) {
-    writer_idx = std::atomic_load_explicit(&this->shared_->writer_idx, std::memory_order_acquire);
-    this->shared_->local_writer_idx = writer_idx;
+    writer_idx = shared_.writer_idx.load(std::memory_order_acquire);
+    shared_.local_writer_idx = writer_idx;
     if (reader_idx >= writer_idx) {
       // queue fully empty
       return false;
@@ -185,11 +185,11 @@ bool SpscQueue::try_dequeue(uint8_t *dst_data) noexcept {
   }
 
   size_t idx =
-      reader_idx & (this->shared_->element_capacity - 1);
+      reader_idx & (shared_.element_capacity - 1);
 
-  memcpy(dst_data,
-         &this->shared_->data[idx * this->shared_->element_size],
-         this->shared_->element_size);
-  std::atomic_store_explicit(&this->shared_->reader_idx, reader_idx + 1, std::memory_order_release);
+  std::memcpy(dst_data,
+         &shared_.data[idx * shared_.element_size],
+         shared_.element_size);
+  shared_.reader_idx.store(reader_idx + 1, std::memory_order_release);
   return true;
 }

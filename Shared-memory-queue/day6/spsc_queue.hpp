@@ -1,5 +1,6 @@
 #ifndef SPSC_QUEUE_H
 #define SPSC_QUEUE_H
+#include <unistd.h>
 #include <atomic>
 #include <utility>
 #include <new>
@@ -9,6 +10,7 @@
 #include <type_traits>
 #include <cstddef>
 #include <cstdint>
+#include <cassert>
 #include <sys/mman.h>
 
 #ifdef __cpp_lib_hardware_interference_size
@@ -53,12 +55,11 @@ struct SpscHeader {
     // no copy, move only
     Fd(const Fd &) = delete;
     Fd &operator=(const Fd &) = delete;
-    Fd(Fd &&other) : fd{other.fd} { other.fd = -1; }
-    Fd &operator=(Fd &&other) {
+    Fd(Fd &&other) noexcept: fd{std::exchange(other.fd, -1)} { }
+    Fd &operator=(Fd &&other) noexcept {
       if (this != &other) {
         if (fd != -1) { close(fd); }
-        fd = other.fd;
-        other.fd = -1;
+        fd = std::exchange(other.fd, -1);
       }
       return *this;
     }
@@ -73,17 +74,13 @@ struct SpscHeader {
     // no copy, move only
     MmappedRegion(const MmappedRegion &) = delete;
     MmappedRegion &operator=(const MmappedRegion &) = delete;
-    MmappedRegion(MmappedRegion &&other) : addr{other.addr}, mapped_size{other.mapped_size} {
-      other.addr = MAP_FAILED;
-      other.mapped_size = 0;
+    MmappedRegion(MmappedRegion &&other) noexcept : addr{std::exchange(other.addr, MAP_FAILED)}, mapped_size{std::exchange(other.mapped_size, 0)} {
     }
-    MmappedRegion &operator=(MmappedRegion &&other) {
+    MmappedRegion &operator=(MmappedRegion &&other) noexcept {
       if (this != &other) {
         if (addr != MAP_FAILED) { munmap(addr, mapped_size); }
-        addr = other.addr;
-        mapped_size = other.mapped_size;
-        other.addr = MAP_FAILED;
-        other.mapped_size = 0;
+        addr = std::exchange(other.addr, MAP_FAILED);
+        mapped_size = std::exchange(other.mapped_size, 0);
       }
       return *this;
     }
@@ -126,15 +123,17 @@ public:
   ~SpscQueue() noexcept;
   SpscQueue(const SpscQueue &) = delete;
   SpscQueue &operator=(const SpscQueue &) = delete;
-  SpscQueue(SpscQueue &&) noexcept = default;
-  SpscQueue &operator=(SpscQueue &&) noexcept = default;
+  SpscQueue(SpscQueue &&) noexcept = delete;
+  SpscQueue &operator=(SpscQueue &&) noexcept = delete;
   SpscMode mode() const noexcept { return header_.mode; }
   [[nodiscard]] bool try_enqueue(const uint8_t *src_data) noexcept;
   [[nodiscard]] bool try_dequeue(uint8_t *dst_data) noexcept;
 private:
-  explicit SpscQueue(SpscHeader &&header) : header_{std::move(header)}, shared_{reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {}
+  explicit SpscQueue(SpscHeader &&header) noexcept: header_{std::move(header)}, shared_{*reinterpret_cast<SpscShared *>(header_.mmap_region.addr)} {
+    assert(header_.mmap_region.addr != MAP_FAILED);
+  }
   SpscHeader header_;
-  SpscShared *shared_;
+  SpscShared &shared_;
 };
 
 #endif // SPSC_QUEUE_H
