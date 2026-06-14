@@ -1,5 +1,6 @@
 #include "spsc_queue.hpp"
 
+#include <bit>
 #include <cassert>
 #include <cerrno>
 #include <cstddef>
@@ -15,14 +16,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-static size_t round_up_power_of_2(size_t n) {
-  size_t pow = 1;
-  while (pow < n) {
-    pow *= 2;
-  }
-  return pow;
-}
-
 std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const char *const path,
                   size_t element_size,
                   size_t element_capacity,
@@ -31,7 +24,7 @@ std::expected<std::unique_ptr<SpscQueue>, SpscError> SpscQueue::create(const cha
   if (!path ||
       element_size == 0 ||
       element_capacity == 0 ||
-      element_capacity != round_up_power_of_2(element_capacity) ||
+      !std::has_single_bit(element_capacity) ||
       (mode != SpscMode::Reader && mode != SpscMode::Writer)) {
 
     return std::unexpected(SpscError::InvalidArguments);
