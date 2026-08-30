@@ -1,3 +1,0 @@
-/home/debian/Teach-Myself-CPP/ABA-Memory-Reclamation-Problem/build/CMakeFiles/aba-problem.dir
-/home/debian/Teach-Myself-CPP/ABA-Memory-Reclamation-Problem/build/CMakeFiles/edit_cache.dir
-/home/debian/Teach-Myself-CPP/ABA-Memory-Reclamation-Problem/build/CMakeFiles/rebuild_cache.dir

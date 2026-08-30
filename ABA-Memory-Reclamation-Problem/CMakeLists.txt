@@ -6,11 +6,16 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # define the project name
-PROJECT(aba-problem)
+PROJECT(aba-memory-reclamation-problem)
 
 SET(THREADS_PREFER_PTHREAD_FLAG ON)
 FIND_PACKAGE(Threads REQUIRED)
 
 # add the definition for main executable, reference the project name
-ADD_EXECUTABLE(${PROJECT_NAME} src/main.cpp src/lockfree_stack_bug.cpp)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE Threads::Threads)
+# ADD_EXECUTABLE(lockfree_stack_bug src/main.cpp src/lockfree_stack_bug.cpp)
+# TARGET_COMPILE_OPTIONS(lockfree_stack_bug PRIVATE -mcx16)
+# TARGET_LINK_LIBRARIES(lockfree_stack_bug PRIVATE Threads::Threads atomic)
+
+ADD_EXECUTABLE(lockfree_stack_tagged_pointer src/main.cpp src/lockfree_stack_tagged_pointer.cpp)
+TARGET_COMPILE_OPTIONS(lockfree_stack_tagged_pointer PRIVATE -mcx16)
+TARGET_LINK_LIBRARIES(lockfree_stack_tagged_pointer PRIVATE Threads::Threads atomic)

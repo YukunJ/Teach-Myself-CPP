@@ -1,6 +1,6 @@
 // This version has an ABA vulnerability and does not yet have a memory reclamation strategy
 #include <stdint.h>
-#include "lockfree_stack.h"
+#include "lockfree_stack_bug.h"
 
 template<typename T>
 void LockfreeStack<T>::push(const T& value) {

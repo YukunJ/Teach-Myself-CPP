@@ -10,7 +10,6 @@ class LockfreeStack {
         Node* next_;
         explicit Node(const T& value): value_(value), next_(nullptr) {}
     };
-
     LockfreeStack(): head_(nullptr) {}
     void push(const T& value);
     std::optional<T> pop(void);
