@@ -30,7 +30,7 @@ class LockfreeStack {
         for (Node* node: retired_nodes_) {
           bool can_delete = true;
           for (size_t i = 0; i < kMaxThreads; ++i) {
-            if (hazard_pointers_[i].ptr_.load(std::memory_order_acquire) == node) {
+            if (hazard_pointers_[i].ptr_.load(std::memory_order_seq_cst) == node) {
               can_delete = false;
               break;
             }
@@ -43,10 +43,6 @@ class LockfreeStack {
         }
         retired_nodes_.swap(new_retired_nodes);
       }
-    }
-
-    void publish_hazard(Node* node, size_t thread_id) {
-      hazard_pointers_[thread_id].ptr_.store(node, std::memory_order_release);
     }
 
     std::atomic<Node*> head_ = nullptr;

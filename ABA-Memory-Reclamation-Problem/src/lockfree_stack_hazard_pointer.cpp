@@ -8,8 +8,8 @@ void LockfreeStack<T>::push(const T& value, size_t thread_id) {
     Node *old_head;
     while (true) {
         old_head = head_.load(std::memory_order_acquire);
-        hazard_pointers_[thread_id].ptr_.store(old_head, std::memory_order_release);
-        if (old_head = head_.load(std::memory_order_acquire); old_head != hazard_pointers_[thread_id].ptr_.load(std::memory_order_relaxed)) {
+        hazard_pointers_[thread_id].ptr_.store(old_head, std::memory_order_seq_cst);
+        if (old_head != head_.load(std::memory_order_seq_cst)) {
             // ensure between we load the head and publish the hazard pointer, the head has not changed
             continue;
         }
@@ -32,8 +32,8 @@ std::optional<T> LockfreeStack<T>::pop(size_t thread_id) {
         if (!old_head) {
             return std::nullopt;
         }
-        hazard_pointers_[thread_id].ptr_.store(old_head, std::memory_order_release);
-        if (old_head = head_.load(std::memory_order_acquire); old_head != hazard_pointers_[thread_id].ptr_.load(std::memory_order_relaxed)) {
+        hazard_pointers_[thread_id].ptr_.store(old_head, std::memory_order_seq_cst);
+        if (old_head != head_.load(std::memory_order_seq_cst)) {
             // ensure between we load the head and publish the hazard pointer, the head has not changed
             continue;
         }

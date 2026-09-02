@@ -8,7 +8,7 @@
 #include <numeric>
 #include <pthread.h>
 #include <atomic>
-#include "lockfree_stack_tagged_pointer.h"
+#include "lockfree_stack_hazard_pointer.h"
 
 static void pin_to_core(int core_id) {
     pthread_t hp = pthread_self();
@@ -46,8 +46,9 @@ int main(int argc, const char *argv[]) {
             int chunk_size = count / producer_num;
             int begin = id * chunk_size;
             int end = std::min(begin + chunk_size, count);
+            int thread_id = id;
             for (int i = begin; i < end; i++) {
-                q.push(numbers[i]);
+                q.push(numbers[i], thread_id);
             }
         });
     }
@@ -62,10 +63,11 @@ int main(int argc, const char *argv[]) {
             int chunk_size = count / consumer_num;
             int begin = id * chunk_size;
             int end = (id == consumer_num - 1) ? count : begin + chunk_size;
+            int thread_id = 8 + id;
             for (int i = begin; i < end; ++i) {
-                auto ret = q.pop();
+                auto ret = q.pop(thread_id);
                 while (!ret.has_value()) {
-                    ret = q.pop();
+                    ret = q.pop(thread_id);
                 }
                 sum += *ret;
             }
