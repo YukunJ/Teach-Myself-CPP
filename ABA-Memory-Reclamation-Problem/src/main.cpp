@@ -8,7 +8,7 @@
 #include <numeric>
 #include <pthread.h>
 #include <atomic>
-#include "lockfree_stack_hazard_pointer.h"
+#include "lockfree_stack_epoch.h"
 
 static void pin_to_core(int core_id) {
     pthread_t hp = pthread_self();
