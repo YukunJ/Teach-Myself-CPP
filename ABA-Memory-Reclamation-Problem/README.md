@@ -2,6 +2,9 @@
 
 This small project demonstrates the **ABA problem** and **memory reclamation problem** in lock-free programming, using a lock-free stack as an example.
 
+ABA problem: a thread holds a reference to a node while the concurrent data structure has changed what that reference means.
+Memory reclamation problem: cannot deallocate a memory without knowing if any other thread is holding a stale reference to it
+
 At a high level, two common approaches are used to address these problems:
 
 1. **Versioning**
@@ -13,6 +16,7 @@ At a high level, two common approaches are used to address these problems:
    * **Hazard Pointers** — solves both ABA and memory reclamation.
    * **Epoch-Based Reclamation (EBR)** — solves both ABA and memory reclamation.
 
+For a detailed tutorial, may refer to my blog post (https://yukunj.github.io/). 
 ## Files
 
 ### `lockfree_stack_bug.cpp`
