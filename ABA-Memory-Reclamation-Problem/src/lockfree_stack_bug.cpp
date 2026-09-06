@@ -17,7 +17,7 @@ std::optional<T> LockfreeStack<T>::pop(void) {
     while (old_head) {
         Node *new_head = old_head->next_;
         // vunlerable to some other threads pops out old_head and new_head, and re-push a head with the same address as old_head
-        if (head_.compare_exchange_weak(old_head, new_head, std::memory_order_acquire, std::memory_order_relaxed)) {
+        if (head_.compare_exchange_weak(old_head, new_head, std::memory_order_release, std::memory_order_acquire)) {
             T to_ret = std::move(old_head->value_);
             // cannot delete old_head here in case other thread is holding a reference to it
             return to_ret;
