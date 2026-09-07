@@ -24,7 +24,7 @@ std::optional<T> LockfreeStack<T>::pop(void) {
     TaggedPointer old_head = head_.load(std::memory_order_acquire);
     while (old_head.node_) {
         Node *next_node = old_head.node_->next_;
-        if (head_.compare_exchange_weak(old_head, TaggedPointer(next_node, old_head.tag_+1), std::memory_order_acq_rel, std::memory_order_acquire)) {
+        if (head_.compare_exchange_weak(old_head, TaggedPointer(next_node, old_head.tag_+1), std::memory_order_release, std::memory_order_acquire)) {
             T to_ret = std::move(old_head.node_->value_);
             // still cannot delete old_head here in case other thread is holding a reference to it
             return to_ret;
