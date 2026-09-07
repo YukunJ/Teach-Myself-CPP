@@ -20,8 +20,8 @@ class LockfreeStack {
     static_assert(sizeof(TaggedPointer) == 16 && "Should be == 128 bits to utilize hardware 128-bit CAS");
     static_assert(std::is_trivially_copyable_v<TaggedPointer> == true);
     LockfreeStack(): head_(TaggedPointer(nullptr, 0)) {}
-    void push(const T& value);
-    std::optional<T> pop(void);
+    void push(const T& value, size_t thread_id);
+    std::optional<T> pop(size_t thread_id);
 
   private:
     std::atomic<TaggedPointer> head_ = nullptr;

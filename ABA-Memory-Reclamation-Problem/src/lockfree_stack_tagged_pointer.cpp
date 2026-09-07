@@ -4,7 +4,7 @@
 #include "lockfree_stack_tagged_pointer.h"
 
 template<typename T>
-void LockfreeStack<T>::push(const T& value) {
+void LockfreeStack<T>::push(const T& value, size_t thread_id) {
     Node *new_node = new Node(value);
     TaggedPointer old_head = head_.load(std::memory_order_relaxed);
     // tagged pointer resolves the ABA problem in the following CAS
@@ -20,7 +20,7 @@ void LockfreeStack<T>::push(const T& value) {
 }
 
 template<typename T>
-std::optional<T> LockfreeStack<T>::pop(void) {
+std::optional<T> LockfreeStack<T>::pop(size_t thread_id) {
     TaggedPointer old_head = head_.load(std::memory_order_acquire);
     while (old_head.node_) {
         Node *next_node = old_head.node_->next_;
