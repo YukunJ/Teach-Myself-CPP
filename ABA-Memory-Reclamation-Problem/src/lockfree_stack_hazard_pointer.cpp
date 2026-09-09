@@ -33,7 +33,7 @@ std::optional<T> LockfreeStack<T>::pop(size_t thread_id) {
         // important to use seq_cst here for the success publish case
         // to let the unlink participate in the global ordering of
         // hazard pointer publication and re-verify 
-        if (head_.compare_exchange_weak(old_head, next_node, std::memory_order_seq_cst, std::memory_order_relaxed)) {
+        if (head_.compare_exchange_weak(old_head, next_node, std::memory_order_seq_cst, std::memory_order_acquire)) {
             T to_ret = std::move(old_head->value_);
             hazard_pointers_[thread_id].ptr_.store(nullptr, std::memory_order_seq_cst);
             retire_node(old_head);
